@@ -1,4 +1,4 @@
-// src/app/page.tsx
+// src/app/redesign/page.tsx
 "use client"
 
 import { useState } from "react"
@@ -16,7 +16,7 @@ import Footer from "@/app/components/Footer"
 // Iconos para servicios
 import { Code, Smartphone, Cpu, Bot, Zap, Lightbulb } from "lucide-react"
 
-export default function HomePage() {
+export default function RedesignPage() {
   const [selectedService, setSelectedService] = useState<number | null>(null)
 
   // Servicios con detalles completos

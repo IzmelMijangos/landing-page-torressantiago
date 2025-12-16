@@ -34,12 +34,6 @@ export default function Header_v2() {
           Proyectos
         </Link>
         <Link
-          href="/#plataformas"
-          className="text-sm font-medium hover:underline underline-offset-4 text-gray-400 hover:text-gray-50"
-        >
-          Plataformas de integración
-        </Link>
-        <Link
           href="/#quienes-somos"
           className="text-sm font-medium hover:underline underline-offset-4 text-gray-400 hover:text-gray-50"
         >

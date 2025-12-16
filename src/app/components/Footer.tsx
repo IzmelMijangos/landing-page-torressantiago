@@ -71,7 +71,7 @@ export default function Footer() {
                 className="flex items-center group"
               >
                 <FaWhatsapp className="h-5 w-5 mr-3 text-yellow-400" />
-                <span className="text-sm group-hover:text-yellow-400">+52 951 648 2395</span>
+                <span className="text-sm group-hover:text-yellow-400">+52 951 318 3885</span>
               </Link>
               </li>
               <li>

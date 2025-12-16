@@ -422,7 +422,7 @@ export default function Terms() {
                           <strong className="text-white">Email</strong>: contacto.torressantiago@gmail.com
                         </li>
                         <li>
-                          <strong className="text-white">Teléfono</strong>: +52 951 648 2395
+                          <strong className="text-white">Teléfono</strong>: +52 951 318 3885
                         </li>
                         <li>
                           <strong className="text-white">Dirección</strong>: Av. Ferrocarril 40-A, Sección Quinta,
