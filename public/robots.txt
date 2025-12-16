@@ -2,9 +2,14 @@
 User-agent: *
 Allow: /
 
+# *
+User-agent: *
+Disallow: /chat-app
+Disallow: /api
+Disallow: /redesign
+
 # Host
 Host: https://www.torressantiago.com
 
 # Sitemaps
 Sitemap: https://www.torressantiago.com/sitemap.xml
-Sitemap: https://www.torressantiago.com/my-custom-sitemap-1.xml

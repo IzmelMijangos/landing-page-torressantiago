@@ -3,6 +3,8 @@
 
 import { motion } from "framer-motion"
 import { Star } from "lucide-react"
+import { homepageFAQs } from "@/app/lib/data/faqs"
+import { generateFAQSchema } from "@/app/lib/utils/seo"
 
 export default function TestimonialsFAQ() {
   const testimonials = [
@@ -20,25 +22,26 @@ export default function TestimonialsFAQ() {
     },
   ]
 
-  const faqs = [
-    {
-      q: "¿Cuánto tarda mi proyecto?",
-      a: "Páginas web: 5-7 días. Sistemas: 10-15 días. Apps: 15-20 días. Te mostramos avances cada 2-3 días."
-    },
-    {
-      q: "¿Qué pasa si necesito cambios después?",
-      a: "30 días de soporte incluido. Cambios menores gratis, cambios mayores se cotizan aparte."
-    },
-    {
-      q: "¿Trabajan solo en Oaxaca?",
-      a: "Estamos en Oaxaca pero trabajamos con clientes de todo México por videollamada."
-    },
-  ]
+  // Use centralized FAQs
+  const faqs = homepageFAQs.map(faq => ({
+    q: faq.question,
+    a: faq.answer
+  }))
+
+  // Generate FAQPage schema
+  const faqSchema = generateFAQSchema(homepageFAQs)
 
   return (
-    <section className="py-20 bg-stone-50">
-      <div className="container mx-auto px-4">
-        <div className="max-w-5xl mx-auto">
+    <>
+      {/* FAQPage Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
+      <section className="py-20 bg-stone-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
           {/* Testimonials */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -113,5 +116,6 @@ export default function TestimonialsFAQ() {
         </div>
       </div>
     </section>
+    </>
   )
 }

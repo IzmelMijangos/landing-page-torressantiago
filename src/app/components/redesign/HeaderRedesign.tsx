@@ -30,9 +30,8 @@ export default function HeaderRedesign() {
 
       <nav className="ml-auto flex items-center gap-4 sm:gap-6">
         <Link
-          href="#servicios"
+          href="/servicios"
           className="text-sm font-medium hover:text-amber-400 transition-colors text-slate-300"
-          onClick={(e) => handleScroll(e, "servicios")}
         >
           Servicios
         </Link>
