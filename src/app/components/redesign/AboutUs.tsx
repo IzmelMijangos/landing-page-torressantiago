@@ -49,7 +49,7 @@ export default function AboutUs() {
                   <div className="text-sm text-stone-600">proyectos</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-amber-700">98%</div>
+                  <div className="text-3xl font-bold text-amber-700">100%</div>
                   <div className="text-sm text-stone-600">satisfacción</div>
                 </div>
               </div>

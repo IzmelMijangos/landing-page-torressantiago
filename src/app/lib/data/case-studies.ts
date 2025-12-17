@@ -87,7 +87,7 @@ export const caseStudiesData: CaseStudy[] = [
   },
   {
     slug: "sistema-pos",
-    title: "Sistema POS",
+    title: "ConstructoPro",
     tagline: "Punto de venta para abarrotes",
     description: "Control de inventario, ventas, proveedores y reportes en tiempo real para distribuidor local.",
     client: "Distribuidora San Juan",

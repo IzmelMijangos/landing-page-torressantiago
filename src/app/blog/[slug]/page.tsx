@@ -1,3 +1,4 @@
+import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
@@ -8,7 +9,63 @@ import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
 import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
 import ShareButton from "@/app/components/blog/ShareButton"
+import BreadcrumbsWithSchema from "@/app/components/BreadcrumbsWithSchema"
 import { Calendar, Clock, User, Tag, ArrowRight } from "lucide-react"
+
+// Generate static params for all blog posts
+export async function generateStaticParams() {
+  const slugs = getAllPostSlugs()
+  return slugs.map((slug) => ({ slug }))
+}
+
+// Generate metadata for each blog post
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = getPostBySlug(params.slug)
+
+  if (!post) {
+    return {
+      title: "Post no encontrado",
+    }
+  }
+
+  const title = `${post.title} | Blog Torres Santiago`
+  const url = `https://www.torressantiago.com/blog/${post.slug}`
+
+  return {
+    title,
+    description: post.description,
+    keywords: post.tags,
+    authors: [{ name: post.author }],
+    openGraph: {
+      title,
+      description: post.description,
+      url,
+      siteName: "Torres Santiago",
+      images: [
+        {
+          url: post.image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+      locale: "es_MX",
+      type: "article",
+      publishedTime: post.date,
+      authors: [post.author],
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: post.description,
+      images: [post.image],
+    },
+    alternates: {
+      canonical: url,
+    },
+  }
+}
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
   const post = getPostBySlug(params.slug)
@@ -47,25 +104,15 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           <header className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
-                {/* Breadcrumb */}
-                <nav className="mb-6 text-sm text-slate-400">
-                  <Link href="/" className="hover:text-white transition-colors">
-                    Inicio
-                  </Link>
-                  <span className="mx-2">/</span>
-                  <Link href="/blog" className="hover:text-white transition-colors">
-                    Blog
-                  </Link>
-                  <span className="mx-2">/</span>
-                  <Link
-                    href={`/blog/categoria/${post.category.toLowerCase().replace(/\s+/g, "-")}`}
-                    className="hover:text-white transition-colors"
-                  >
-                    {post.category}
-                  </Link>
-                  <span className="mx-2">/</span>
-                  <span className="text-white">{post.title}</span>
-                </nav>
+                {/* Breadcrumbs with Schema */}
+                <BreadcrumbsWithSchema
+                  items={[
+                    { label: "Inicio", href: "/" },
+                    { label: "Blog", href: "/blog" },
+                    { label: post.category, href: `/blog/categoria/${post.category.toLowerCase().replace(/\s+/g, "-")}` },
+                    { label: post.title }
+                  ]}
+                />
 
                 {/* Category Badge */}
                 <div className="inline-block bg-accent/20 text-accent text-sm font-semibold px-4 py-2 rounded-full mb-6">

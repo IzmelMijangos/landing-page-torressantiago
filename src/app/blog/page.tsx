@@ -1,10 +1,12 @@
 import { Metadata } from "next"
 import Link from "next/link"
-import { getAllPosts, getFeaturedPosts, getAllCategories } from "@/app/lib/utils/blog"
+import { getAllPosts, getFeaturedPosts } from "@/app/lib/utils/blog"
 import { generatePageMetadata } from "@/app/lib/utils/seo"
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
 import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
+import BreadcrumbsWithSchema from "@/app/components/BreadcrumbsWithSchema"
+import BlogSidebar from "@/app/components/blog/BlogSidebar"
 import { Calendar, Clock, ArrowRight } from "lucide-react"
 
 export const metadata: Metadata = generatePageMetadata({
@@ -17,7 +19,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default function BlogPage() {
   const allPosts = getAllPosts()
   const featuredPosts = getFeaturedPosts(1)
-  const categories = getAllCategories()
   const regularPosts = allPosts.filter((post) => !post.featured)
 
   return (
@@ -27,13 +28,23 @@ export default function BlogPage() {
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                Blog
-              </h1>
-              <p className="text-xl text-slate-300">
-                Conocimiento, tendencias y mejores prácticas en desarrollo web, IA y tecnología
-              </p>
+            <div className="max-w-7xl mx-auto">
+              {/* Breadcrumbs */}
+              <BreadcrumbsWithSchema
+                items={[
+                  { label: "Inicio", href: "/" },
+                  { label: "Blog" }
+                ]}
+              />
+
+              <div className="text-center mt-8">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                  Blog de Tecnología
+                </h1>
+                <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+                  Conocimiento, tendencias y mejores prácticas en desarrollo web, IA y tecnología para hacer crecer tu negocio
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -150,50 +161,11 @@ export default function BlogPage() {
               </div>
 
               {/* Sidebar */}
-              <aside className="lg:col-span-1">
+              <div className="lg:col-span-1">
                 <div className="sticky top-20">
-                  {/* Categories */}
-                  <div className="bg-white rounded-xl p-6 shadow-md mb-6">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4">Categorías</h3>
-                    {categories.length === 0 ? (
-                      <p className="text-stone-600 text-sm">No hay categorías aún</p>
-                    ) : (
-                      <div className="space-y-2">
-                        {categories.map((category) => (
-                          <Link
-                            key={category.slug}
-                            href={`/blog/categoria/${category.slug}`}
-                            className="flex items-center justify-between p-3 rounded-lg hover:bg-stone-50 transition-colors group"
-                          >
-                            <span className="text-stone-700 group-hover:text-accent transition-colors">
-                              {category.name}
-                            </span>
-                            <span className="text-xs bg-stone-200 text-stone-600 px-2 py-1 rounded-full">
-                              {category.count}
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* CTA */}
-                  <div className="bg-gradient-to-br from-accent to-yellow-600 rounded-xl p-6 text-white">
-                    <h3 className="text-xl font-bold mb-3">¿Necesitas ayuda con tu proyecto?</h3>
-                    <p className="text-sm mb-4 text-white/90">
-                      Platiquemos sobre cómo podemos ayudarte a transformar tu negocio con tecnología.
-                    </p>
-                    <a
-                      href="https://wa.me/529516482395?text=Hola,%20me%20interesa%20una%20consultor%C3%ADa"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full bg-white text-accent text-center font-semibold py-3 rounded-lg hover:bg-stone-50 transition-colors"
-                    >
-                      Contactar
-                    </a>
-                  </div>
+                  <BlogSidebar showRecentPosts={false} />
                 </div>
-              </aside>
+              </div>
             </div>
           </div>
         </section>

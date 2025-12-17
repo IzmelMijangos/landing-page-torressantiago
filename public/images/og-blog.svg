@@ -1,0 +1,48 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#grad3)"/>
+
+  <!-- Decorative elements (document icon) -->
+  <rect x="100" y="150" width="300" height="400" fill="#c17207" opacity="0.1" rx="15"/>
+  <rect x="140" y="200" width="220" height="15" fill="#c17207" opacity="0.3" rx="4"/>
+  <rect x="140" y="245" width="220" height="15" fill="#c17207" opacity="0.3" rx="4"/>
+  <rect x="140" y="290" width="180" height="15" fill="#c17207" opacity="0.3" rx="4"/>
+
+  <!-- Main content -->
+  <text x="700" y="200" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="white" text-anchor="middle">
+    Blog
+  </text>
+
+  <text x="700" y="280" font-family="Arial, sans-serif" font-size="32" fill="#cbd5e1" text-anchor="middle">
+    Insights y tendencias tecnológicas
+  </text>
+
+  <!-- Topics -->
+  <text x="700" y="360" font-family="Arial, sans-serif" font-size="26" fill="#94a3b8" text-anchor="middle">
+    Desarrollo Web • IA • Ciberseguridad
+  </text>
+
+  <text x="700" y="410" font-family="Arial, sans-serif" font-size="26" fill="#94a3b8" text-anchor="middle">
+    Datos • Automatización • Tendencias
+  </text>
+
+  <!-- Accent bar -->
+  <rect x="500" y="460" width="400" height="6" fill="#c17207" rx="3"/>
+
+  <!-- Footer -->
+  <text x="700" y="520" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="white" text-anchor="middle">
+    Torres Santiago
+  </text>
+  <text x="700" y="570" font-family="Arial, sans-serif" font-size="22" fill="#c17207" text-anchor="middle">
+    www.torressantiago.com/blog
+  </text>
+</svg>

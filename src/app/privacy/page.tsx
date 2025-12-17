@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import Header from "@/app/components/Header"
 import Footer from "@/app/components/Footer"
+import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import { ChevronRight, Lock, Shield, Eye, Database, Clock, AlertCircle } from "lucide-react"
-import Header_v2 from "../components/Header_v2"
+
 export default function Privacy() {
   const [activeSection, setActiveSection] = useState("introduction")
 
@@ -21,7 +21,7 @@ export default function Privacy() {
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-gradient-to-b from-gray-950 to-gray-900 text-gray-50">
-      <Header_v2 />
+      <HeaderRedesign />
 
       <main className="flex-1 pt-24">
         {/* Hero Section */}

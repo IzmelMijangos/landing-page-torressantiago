@@ -5,7 +5,8 @@ import { generatePageMetadata } from "@/app/lib/utils/seo"
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
 import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
-import { ArrowRight } from "lucide-react"
+import BreadcrumbsWithSchema from "@/app/components/BreadcrumbsWithSchema"
+import { ArrowRight, Home } from "lucide-react"
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Servicios de Desarrollo Web y Tecnología",
@@ -22,13 +23,23 @@ export default function ServiciosPage() {
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                Nuestros Servicios
-              </h1>
-              <p className="text-xl text-slate-300 mb-8">
-                Soluciones tecnológicas diseñadas para impulsar tu negocio. Desde sitios web hasta automatización con IA.
-              </p>
+            <div className="max-w-4xl mx-auto">
+              {/* Breadcrumbs */}
+              <BreadcrumbsWithSchema
+                items={[
+                  { label: "Inicio", href: "/" },
+                  { label: "Servicios" }
+                ]}
+              />
+
+              <div className="text-center mt-8">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                  Nuestros Servicios
+                </h1>
+                <p className="text-xl text-slate-300 mb-8">
+                  Soluciones tecnológicas diseñadas para impulsar tu negocio. Desde sitios web hasta automatización con IA.
+                </p>
+              </div>
             </div>
           </div>
         </section>

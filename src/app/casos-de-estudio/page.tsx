@@ -6,6 +6,7 @@ import { generatePageMetadata } from "@/app/lib/utils/seo"
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
 import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
+import BreadcrumbsWithSchema from "@/app/components/BreadcrumbsWithSchema"
 import { ArrowRight } from "lucide-react"
 
 export const metadata: Metadata = generatePageMetadata({
@@ -23,13 +24,23 @@ export default function CasosDeEstudioPage() {
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                Casos de Éxito
-              </h1>
-              <p className="text-xl text-slate-300 mb-8">
-                Proyectos reales que transformaron negocios. Conoce cómo hemos ayudado a nuestros clientes a alcanzar sus objetivos.
-              </p>
+            <div className="max-w-4xl mx-auto">
+              {/* Breadcrumbs */}
+              <BreadcrumbsWithSchema
+                items={[
+                  { label: "Inicio", href: "/" },
+                  { label: "Proyectos" }
+                ]}
+              />
+
+              <div className="text-center mt-8">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                  Casos de Éxito
+                </h1>
+                <p className="text-xl text-slate-300 mb-8">
+                  Proyectos reales que transformaron negocios. Conoce cómo hemos ayudado a nuestros clientes a alcanzar sus objetivos.
+                </p>
+              </div>
             </div>
           </div>
         </section>
