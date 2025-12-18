@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getAllPosts } from '@/app/lib/utils/blog'
 
+export const dynamic = 'force-dynamic'
+
 // GET: Obtener todos los posts del blog
 export async function GET(req: Request) {
   try {

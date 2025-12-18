@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server'
 
+interface PostPreview {
+  slug: string
+  title: string
+  url: string
+  description: string
+}
+
 // POST: Preview del newsletter
 export async function POST(req: Request) {
   try {
@@ -13,14 +20,14 @@ export async function POST(req: Request) {
     }
 
     // Crear posts de ejemplo (en producción estos vendrían de tu sistema de blog)
-    const posts = postSlugs.map((slug: string) => ({
+    const posts: PostPreview[] = postSlugs.map((slug: string) => ({
       slug,
       title: slug.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
       url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.torressantiago.com'}/blog/${slug}`,
       description: 'Descripción del artículo...'
     }))
 
-    const postsHTML = posts.map(post => `
+    const postsHTML = posts.map((post: PostPreview) => `
       <div style="background-color: #f9f9f9; border-left: 4px solid #c17207; padding: 15px; margin: 15px 0; border-radius: 5px;">
         <h3 style="margin: 0 0 10px 0; color: #333;">
           <a href="${post.url}" style="color: #c17207; text-decoration: none;">

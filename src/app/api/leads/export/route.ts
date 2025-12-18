@@ -3,6 +3,8 @@ import { readFile } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 
+export const dynamic = 'force-dynamic'
+
 const DATA_DIR = path.join(process.cwd(), 'data')
 const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'newsletter-subscribers.json')
 const DOWNLOADS_FILE = path.join(DATA_DIR, 'lead-magnet-downloads.json')
