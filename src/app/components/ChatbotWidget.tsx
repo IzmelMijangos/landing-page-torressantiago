@@ -249,7 +249,7 @@ export default function ChatbotWidget() {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-gradient-to-r from-accent to-yellow-600 hover:from-yellow-600 hover:to-accent text-white rounded-full p-3 sm:p-4 shadow-2xl transition-all duration-300 group hover:scale-110"
+            className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 bg-gradient-to-r from-accent to-yellow-600 hover:from-yellow-600 hover:to-accent text-white rounded-full p-3 sm:p-4 shadow-2xl transition-all duration-300 group hover:scale-110"
             aria-label="Abrir chat"
           >
             <MessageSquare className="w-6 h-6 sm:w-7 sm:h-7" />
@@ -277,10 +277,10 @@ export default function ChatbotWidget() {
             }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className={`fixed z-50 bg-white shadow-2xl flex flex-col border border-gray-200 transition-all duration-300
+            className={`fixed z-50 bg-white shadow-2xl flex flex-col transition-all duration-300
               ${isMinimized
-                ? 'bottom-4 right-4 sm:bottom-6 sm:right-6 w-[320px] h-auto rounded-full cursor-pointer hover:scale-105 overflow-hidden'
-                : 'bottom-0 right-0 sm:bottom-6 sm:right-6 w-full sm:w-[420px] h-screen sm:h-[650px] sm:max-w-md sm:rounded-2xl rounded-none overflow-hidden'}`}
+                ? 'bottom-6 right-6 sm:bottom-8 sm:right-8 w-[280px] sm:w-[320px] h-auto rounded-full cursor-pointer hover:scale-105 overflow-hidden border border-gray-200'
+                : 'inset-0 sm:inset-auto sm:bottom-8 sm:right-8 sm:w-[420px] sm:h-[650px] sm:max-w-md sm:rounded-2xl sm:border sm:border-gray-200 overflow-hidden'}`}
             onClick={() => isMinimized && setIsMinimized(false)}
           >
             {/* Header mejorado con diseño condicional */}
@@ -347,7 +347,7 @@ export default function ChatbotWidget() {
             {!isMinimized && (
               <>
                 {/* Messages con mejor diseño */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-stone-50 to-stone-100">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-gradient-to-b from-stone-50 to-stone-100">
                   {messages.map((message, index) => (
                     <motion.div
                       key={index}
@@ -357,14 +357,14 @@ export default function ChatbotWidget() {
                       className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-3 ${
+                        className={`max-w-[90%] sm:max-w-[80%] rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3 ${
                           message.role === 'user'
                             ? 'bg-gradient-to-r from-accent to-yellow-600 text-white shadow-md'
                             : 'bg-white text-gray-800 shadow-md border border-gray-200'
                         }`}
                       >
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
-                        <p className={`text-xs mt-2 ${
+                        <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+                        <p className={`text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${
                           message.role === 'user' ? 'text-white/80' : 'text-gray-500'
                         }`}>
                           {message.timestamp.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
@@ -383,7 +383,7 @@ export default function ChatbotWidget() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
-                      className="flex flex-wrap gap-2 px-2"
+                      className="flex flex-wrap gap-2 px-1 sm:px-2"
                     >
                       {messages[messages.length - 1].quickReplies!.map((reply, idx) => (
                         <motion.button
@@ -392,7 +392,7 @@ export default function ChatbotWidget() {
                           animate={{ scale: 1 }}
                           transition={{ delay: 0.4 + idx * 0.1, type: 'spring', stiffness: 200 }}
                           onClick={() => handleQuickReply(reply)}
-                          className="px-4 py-2 bg-white border-2 border-accent/30 text-accent rounded-full text-sm font-medium hover:bg-accent hover:text-white hover:border-accent transition-all duration-200 shadow-sm hover:shadow-md"
+                          className="px-3 py-2 sm:px-4 sm:py-2 bg-white border-2 border-accent/30 text-accent rounded-full text-xs sm:text-sm font-medium active:bg-accent active:text-white active:border-accent transition-all duration-200 shadow-sm active:shadow-md min-h-[44px] sm:min-h-0 flex items-center justify-center"
                         >
                           {reply}
                         </motion.button>
@@ -405,12 +405,15 @@ export default function ChatbotWidget() {
                       animate={{ opacity: 1, y: 0 }}
                       className="flex justify-start"
                     >
-                      <div className="bg-white rounded-2xl px-5 py-4 shadow-md border border-gray-200">
+                      <div className="bg-white rounded-2xl px-3 py-3 sm:px-5 sm:py-4 shadow-md border border-gray-200">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-500">Alex está escribiendo</span>
+                          <span className="text-xs sm:text-sm text-gray-500">
+                            <span className="hidden sm:inline">Alex está escribiendo</span>
+                            <span className="sm:hidden">Escribiendo</span>
+                          </span>
                           <div className="flex gap-1">
                             <motion.div
-                              className="w-2 h-2 bg-gray-400 rounded-full"
+                              className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full"
                               animate={{ y: [0, -6, 0] }}
                               transition={{
                                 duration: 0.6,
@@ -419,7 +422,7 @@ export default function ChatbotWidget() {
                               }}
                             />
                             <motion.div
-                              className="w-2 h-2 bg-gray-400 rounded-full"
+                              className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full"
                               animate={{ y: [0, -6, 0] }}
                               transition={{
                                 duration: 0.6,
@@ -429,7 +432,7 @@ export default function ChatbotWidget() {
                               }}
                             />
                             <motion.div
-                              className="w-2 h-2 bg-gray-400 rounded-full"
+                              className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full"
                               animate={{ y: [0, -6, 0] }}
                               transition={{
                                 duration: 0.6,
@@ -446,8 +449,8 @@ export default function ChatbotWidget() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input mejorado con mejor visibilidad */}
-                <div className="p-4 bg-white border-t-2 border-gray-200 shadow-inner">
+                {/* Input mejorado con mejor visibilidad y táctil en móvil */}
+                <div className="p-3 sm:p-4 bg-white border-t-2 border-gray-200 shadow-inner safe-area-bottom">
                   <div className="flex gap-2">
                     <input
                       ref={inputRef}
@@ -455,28 +458,29 @@ export default function ChatbotWidget() {
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
-                      placeholder="Escribe tu mensaje aquí..."
-                      className="flex-1 px-4 py-3 border-2 border-accent/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-white text-gray-900 text-sm placeholder:text-gray-400 shadow-sm transition-all"
+                      placeholder="Escribe tu mensaje..."
+                      className="flex-1 px-3 py-3 sm:px-4 sm:py-3 border-2 border-accent/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent bg-white text-gray-900 text-base placeholder:text-gray-400 shadow-sm transition-all"
                       disabled={isLoading}
                       maxLength={500}
                     />
                     <button
                       onClick={sendMessage}
                       disabled={!input.trim() || isLoading}
-                      className="bg-gradient-to-r from-accent to-yellow-600 text-white p-3 rounded-xl hover:shadow-lg hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                      className="bg-gradient-to-r from-accent to-yellow-600 text-white p-3 sm:p-3.5 rounded-xl hover:shadow-lg active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                       aria-label="Enviar mensaje"
                     >
-                      <Send className="w-5 h-5" />
+                      <Send className="w-5 h-5 sm:w-5 sm:h-5" />
                     </button>
                   </div>
                   {input.length > 0 && (
-                    <p className="text-xs text-gray-400 mt-2 text-right">
-                      {input.length}/500 caracteres
+                    <p className="text-[10px] sm:text-xs text-gray-400 mt-1.5 sm:mt-2 text-right">
+                      {input.length}/500
                     </p>
                   )}
-                  <p className="text-xs text-gray-400 mt-2 text-center flex items-center justify-center gap-1">
+                  <p className="text-[10px] sm:text-xs text-gray-400 mt-1.5 sm:mt-2 text-center flex items-center justify-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                    Powered by IA • Torres Santiago
+                    <span className="hidden sm:inline">Powered by IA • Torres Santiago</span>
+                    <span className="sm:hidden">Powered by IA</span>
                   </p>
                 </div>
               </>

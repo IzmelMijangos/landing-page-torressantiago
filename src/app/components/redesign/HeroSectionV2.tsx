@@ -17,9 +17,9 @@ export default function HeroSectionV2() {
       {/* Subtle background texture */}
       <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
 
-      {/* Refined glow effects */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-amber-900/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-orange-900/10 rounded-full blur-3xl" />
+      {/* Refined glow effects - contained within viewport */}
+      <div className="absolute top-1/4 right-1/4 w-64 h-64 md:w-96 md:h-96 bg-amber-900/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-orange-900/10 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 py-20 md:py-28 relative z-10">
         <div className="grid md:grid-cols-2 gap-16 items-center">
