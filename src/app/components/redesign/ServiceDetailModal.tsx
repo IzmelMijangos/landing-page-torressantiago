@@ -144,7 +144,7 @@ export default function ServiceDetailModal({
                     Cotizar este servicio
                   </GameButton>
                   <p className="text-center text-sm text-stone-500 mt-3">
-                    Agenda una sesión de 1 hora sin compromiso
+                    Agenda una sesión de 30 minutos sin compromiso
                   </p>
                 </div>
               </div>

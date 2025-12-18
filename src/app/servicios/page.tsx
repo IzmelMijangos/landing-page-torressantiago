@@ -4,7 +4,6 @@ import { servicesData } from "@/app/lib/data/services"
 import { generatePageMetadata } from "@/app/lib/utils/seo"
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
-import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
 import BreadcrumbsWithSchema from "@/app/components/BreadcrumbsWithSchema"
 import { ArrowRight, Home } from "lucide-react"
 
@@ -104,10 +103,10 @@ export default function ServiciosPage() {
               ¿No estás seguro de qué servicio necesitas?
             </h2>
             <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-              Agenda 1 hora de consultoría gratuita. Te ayudamos a encontrar la mejor solución para tu negocio.
+              Agenda 30 minutos de consultoría gratuita. Te ayudamos a encontrar la mejor solución para tu negocio.
             </p>
             <a
-              href="https://wa.me/529516482395?text=Hola,%20me%20interesa%20una%20asesor%C3%ADa%20gratuita"
+              href="https://wa.me/529513183885?text=Hola,%20me%20interesa%20una%20asesor%C3%ADa%20gratuita"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg px-12 py-5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl inline-flex items-center gap-3"
@@ -125,7 +124,6 @@ export default function ServiciosPage() {
       </main>
 
       <Footer />
-      <WhatsAppFloatingButton />
     </>
   )
 }

@@ -10,7 +10,6 @@ import { caseStudiesData } from "@/app/lib/data/case-studies"
 import { generatePageMetadata, generateFAQSchema } from "@/app/lib/utils/seo"
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
-import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
 import Breadcrumbs from "@/app/components/Breadcrumbs"
 import {
   Check,
@@ -156,7 +155,7 @@ export default function IndustryPage({
                   )}
 
                   <a
-                    href="https://wa.me/529516482395?text=Hola,%20me%20interesa%20informaci%C3%B3n%20sobre%20soluciones%20para%20mi%20negocio"
+                    href="https://wa.me/529513183885?text=Hola,%20me%20interesa%20informaci%C3%B3n%20sobre%20soluciones%20para%20mi%20negocio"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-accent hover:bg-yellow-600 text-slate-900 font-bold px-8 py-4 rounded-lg transition-all shadow-lg hover:shadow-xl"
@@ -413,7 +412,7 @@ export default function IndustryPage({
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
-                  href="https://wa.me/529516482395?text=Hola,%20quiero%20agendar%20una%20consultor%C3%ADa%20gratuita"
+                  href="https://wa.me/529513183885?text=Hola,%20quiero%20agendar%20una%20consultor%C3%ADa%20gratuita"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg px-12 py-5 rounded-lg transition-all shadow-lg hover:shadow-xl"
@@ -438,7 +437,6 @@ export default function IndustryPage({
       </main>
 
       <Footer />
-      <WhatsAppFloatingButton />
     </>
   )
 }

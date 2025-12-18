@@ -1,0 +1,247 @@
+[
+  {
+    "id": "lead_1766017593345_gq2uner4m",
+    "timestamp": "2025-12-18T00:26:33.345Z",
+    "source": "chatbot",
+    "score": 70,
+    "name": "el asistente virtual de torres santiago",
+    "service": "App Móvil",
+    "conversation": [
+      {
+        "role": "assistant",
+        "content": "¡Hola! 👋 Soy el asistente virtual de Torres Santiago.\n\n¿En qué puedo ayudarte hoy? Puedo informarte sobre nuestros servicios, precios y agendar una consultoría gratuita.",
+        "timestamp": "2025-12-18T00:25:52.611Z"
+      },
+      {
+        "role": "user",
+        "content": "Hola",
+        "timestamp": "2025-12-18T00:26:02.091Z"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Hola! 😊 ¿En qué puedo ayudarte hoy? Si tienes preguntas sobre nuestros servicios de tecnología, estaré encantado de asistirte.",
+        "timestamp": "2025-12-18T00:26:03.344Z"
+      },
+      {
+        "role": "user",
+        "content": "Quisiera desarrollar una app de desarrollo puedes darme el código de un html?",
+        "timestamp": "2025-12-18T00:26:30.405Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Entiendo tu pregunta, pero soy el asistente especializado en servicios de tecnología de Torres Santiago 😊\n\nMi función es ayudarte con:\n• Desarrollo web y apps móviles\n• Chatbots e IA\n• Automatización de procesos\n• Ciberseguridad\n• Consultoría TI\n\n¿Te interesa alguno de estos servicios o tienes un proyecto en mente?",
+        "timestamp": "2025-12-18T00:26:32.764Z"
+      }
+    ],
+    "notified": true
+  },
+  {
+    "id": "lead_1766018309284_coi6n60at",
+    "timestamp": "2025-12-18T00:38:29.284Z",
+    "source": "chatbot",
+    "score": 65,
+    "name": "alex",
+    "service": "Chatbot IA",
+    "conversation": [
+      {
+        "role": "assistant",
+        "content": "¡Hola! 👋 Soy Alex, tu asistente virtual de Torres Santiago.\n\n¿En qué puedo ayudarte hoy? Puedo asesorarte sobre desarrollo web, apps móviles, chatbots con IA y más.",
+        "timestamp": "2025-12-18T00:37:03.672Z"
+      },
+      {
+        "role": "user",
+        "content": "Que precio tiene un desarrollo web para mi empresa?",
+        "timestamp": "2025-12-18T00:37:30.131Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Buena pregunta 😊 El costo de un sitio web puede variar según lo que necesites. Por ejemplo, un sitio informativo es diferente a un e-commerce.\n\n¿Qué tipo de funcionalidades estás buscando para tu empresa? Así puedo darte una idea más precisa.",
+        "timestamp": "2025-12-18T00:37:32.658Z"
+      },
+      {
+        "role": "user",
+        "content": "Me interesa un sitio para llevar mi inventario de impresoras",
+        "timestamp": "2025-12-18T00:38:06.371Z"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Entiendo! Tener un sitio para gestionar tu inventario de impresoras puede ser muy útil. 🖨️ \n\nPodríamos crear un sistema que te permita agregar, editar y rastrear tu inventario fácilmente. Dependiendo de las funcionalidades específicas que necesites, el costo podría comenzar desde $15,000 MXN.\n\n¿Te gustaría agendar una consultoría gratis de 30 minutos para hablar más a fondo sobre lo que necesitas?",
+        "timestamp": "2025-12-18T00:38:08.957Z"
+      },
+      {
+        "role": "user",
+        "content": "Si por favor!",
+        "timestamp": "2025-12-18T00:38:26.964Z"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Perfecto! 😊 ¿Qué día y hora te gustaría tener la consultoría? Estoy aquí para ayudarte a encontrar la mejor solución para tu negocio.",
+        "timestamp": "2025-12-18T00:38:28.618Z"
+      }
+    ],
+    "notified": true
+  },
+  {
+    "id": "lead_1766018365198_c2veltdpl",
+    "timestamp": "2025-12-18T00:39:25.199Z",
+    "source": "chatbot",
+    "score": 65,
+    "name": "alex",
+    "service": "Chatbot IA",
+    "conversation": [
+      {
+        "role": "assistant",
+        "content": "¡Hola! 👋 Soy Alex, tu asistente virtual de Torres Santiago.\n\n¿En qué puedo ayudarte hoy? Puedo asesorarte sobre desarrollo web, apps móviles, chatbots con IA y más.",
+        "timestamp": "2025-12-18T00:37:03.672Z"
+      },
+      {
+        "role": "user",
+        "content": "Que precio tiene un desarrollo web para mi empresa?",
+        "timestamp": "2025-12-18T00:37:30.131Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Buena pregunta 😊 El costo de un sitio web puede variar según lo que necesites. Por ejemplo, un sitio informativo es diferente a un e-commerce.\n\n¿Qué tipo de funcionalidades estás buscando para tu empresa? Así puedo darte una idea más precisa.",
+        "timestamp": "2025-12-18T00:37:32.658Z"
+      },
+      {
+        "role": "user",
+        "content": "Me interesa un sitio para llevar mi inventario de impresoras",
+        "timestamp": "2025-12-18T00:38:06.371Z"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Entiendo! Tener un sitio para gestionar tu inventario de impresoras puede ser muy útil. 🖨️ \n\nPodríamos crear un sistema que te permita agregar, editar y rastrear tu inventario fácilmente. Dependiendo de las funcionalidades específicas que necesites, el costo podría comenzar desde $15,000 MXN.\n\n¿Te gustaría agendar una consultoría gratis de 30 minutos para hablar más a fondo sobre lo que necesitas?",
+        "timestamp": "2025-12-18T00:38:08.957Z"
+      },
+      {
+        "role": "user",
+        "content": "Si por favor!",
+        "timestamp": "2025-12-18T00:38:26.964Z"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Perfecto! 😊 ¿Qué día y hora te gustaría tener la consultoría? Estoy aquí para ayudarte a encontrar la mejor solución para tu negocio.",
+        "timestamp": "2025-12-18T00:38:28.618Z"
+      },
+      {
+        "role": "user",
+        "content": "Puedes hoy a las 11 de la noche?",
+        "timestamp": "2025-12-18T00:39:23.910Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Agradezco tu interés, pero nuestros horarios son de lunes a viernes de 9 AM a 6 PM. \n\n¿Te vendría bien programar la consultoría para mañana a alguna hora dentro de ese rango? Estoy aquí para ayudarte. 😊",
+        "timestamp": "2025-12-18T00:39:25.146Z"
+      }
+    ],
+    "notified": true
+  },
+  {
+    "id": "lead_1766018396544_czs1k6gak",
+    "timestamp": "2025-12-18T00:39:56.544Z",
+    "source": "chatbot",
+    "score": 100,
+    "name": "alex",
+    "service": "Chatbot IA",
+    "conversation": [
+      {
+        "role": "assistant",
+        "content": "¡Hola! 👋 Soy Alex, tu asistente virtual de Torres Santiago.\n\n¿En qué puedo ayudarte hoy? Puedo asesorarte sobre desarrollo web, apps móviles, chatbots con IA y más.",
+        "timestamp": "2025-12-18T00:37:03.672Z"
+      },
+      {
+        "role": "user",
+        "content": "Que precio tiene un desarrollo web para mi empresa?",
+        "timestamp": "2025-12-18T00:37:30.131Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Buena pregunta 😊 El costo de un sitio web puede variar según lo que necesites. Por ejemplo, un sitio informativo es diferente a un e-commerce.\n\n¿Qué tipo de funcionalidades estás buscando para tu empresa? Así puedo darte una idea más precisa.",
+        "timestamp": "2025-12-18T00:37:32.658Z"
+      },
+      {
+        "role": "user",
+        "content": "Me interesa un sitio para llevar mi inventario de impresoras",
+        "timestamp": "2025-12-18T00:38:06.371Z"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Entiendo! Tener un sitio para gestionar tu inventario de impresoras puede ser muy útil. 🖨️ \n\nPodríamos crear un sistema que te permita agregar, editar y rastrear tu inventario fácilmente. Dependiendo de las funcionalidades específicas que necesites, el costo podría comenzar desde $15,000 MXN.\n\n¿Te gustaría agendar una consultoría gratis de 30 minutos para hablar más a fondo sobre lo que necesitas?",
+        "timestamp": "2025-12-18T00:38:08.957Z"
+      },
+      {
+        "role": "user",
+        "content": "Si por favor!",
+        "timestamp": "2025-12-18T00:38:26.964Z"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Perfecto! 😊 ¿Qué día y hora te gustaría tener la consultoría? Estoy aquí para ayudarte a encontrar la mejor solución para tu negocio.",
+        "timestamp": "2025-12-18T00:38:28.618Z"
+      },
+      {
+        "role": "user",
+        "content": "Puedes hoy a las 11 de la noche?",
+        "timestamp": "2025-12-18T00:39:23.910Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Agradezco tu interés, pero nuestros horarios son de lunes a viernes de 9 AM a 6 PM. \n\n¿Te vendría bien programar la consultoría para mañana a alguna hora dentro de ese rango? Estoy aquí para ayudarte. 😊",
+        "timestamp": "2025-12-18T00:39:25.146Z"
+      },
+      {
+        "role": "user",
+        "content": "Si pues ya que mañana a las 11 de la mañana por favor",
+        "timestamp": "2025-12-18T00:39:53.985Z"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Listo! He agendado tu consultoría para mañana a las 11 de la mañana. 📅\n\nTe contactaré por aquí para iniciar la conversación. Si necesitas cambiar algo o tienes alguna pregunta antes, no dudes en decírmelo.\n\n¡Hasta mañana! 😊",
+        "timestamp": "2025-12-18T00:39:56.483Z"
+      }
+    ],
+    "notified": true
+  },
+  {
+    "id": "lead_1766071588516_2bp6i6uxb",
+    "timestamp": "2025-12-18T15:26:28.516Z",
+    "source": "chatbot",
+    "score": 135,
+    "name": "Por Favor",
+    "email": "tomiizmel@gmail.com",
+    "phone": "No proporcionado",
+    "service": "Desarrollo Web",
+    "conversation": [],
+    "notified": true
+  },
+  {
+    "id": "lead_1766072288805_gyzu852uj",
+    "timestamp": "2025-12-18T15:38:08.805Z",
+    "source": "chatbot",
+    "score": 110,
+    "name": "Izmel Angel",
+    "email": "No proporcionado",
+    "phone": "9513183885",
+    "service": "Desarrollo Web",
+    "conversation": [
+      {
+        "role": "user",
+        "content": "si por favor"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Excelente! Para coordinar los siguientes pasos, necesito capturar un par de datos. 😊\n\n¿Podrías compartirme tu nombre completo y tu email o WhatsApp? Así podemos seguir adelante con tu proyecto de e-commerce."
+      },
+      {
+        "role": "user",
+        "content": "si claro Izmel Angel y 9513183885"
+      },
+      {
+        "role": "assistant",
+        "content": "¡Gracias, Izmel! 😊 He anotado tu nombre y número. \n\nTe escribiré por WhatsApp en breve para coordinar una consultoría gratuita de 30 minutos y discutir todos los detalles de tu e-commerce. ¡Hablemos pronto! 🚀"
+      }
+    ],
+    "notified": true
+  }
+]

@@ -5,7 +5,6 @@ import { servicesData, getServiceBySlug, getAllServiceSlugs } from "@/app/lib/da
 import { generateServiceSchema } from "@/app/lib/utils/seo";
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign";
 import Footer from "@/app/components/Footer";
-import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton";
 import WhatsAppCTAButton from "@/app/components/WhatsAppCTAButton";
 import { Check, Clock, ArrowRight } from "lucide-react";
 
@@ -235,7 +234,6 @@ export default function ServiceDetailPage({ params }: { params: { slug: string }
       </main>
 
       <Footer />
-      <WhatsAppFloatingButton />
     </>
   );
 }

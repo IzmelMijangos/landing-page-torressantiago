@@ -1,0 +1,30 @@
+[
+  {
+    "id": "sub_1766074768350_ci49aqrvt",
+    "email": "tomiizmel@gmail.com",
+    "timestamp": "2025-12-18T16:19:28.350Z",
+    "source": "footer",
+    "page": "/",
+    "status": "active",
+    "emailsSent": 0
+  },
+  {
+    "id": "sub_1766075549747_anszj50jx",
+    "email": "izmel_56@hotmail.com",
+    "timestamp": "2025-12-18T16:32:29.747Z",
+    "source": "footer",
+    "page": "/",
+    "status": "active",
+    "emailsSent": 0
+  },
+  {
+    "id": "sub_1766080091243_jphmfmyq1",
+    "email": "izmel.torres@123sourcing.com",
+    "timestamp": "2025-12-18T17:48:11.243Z",
+    "source": "footer",
+    "page": "/",
+    "status": "unsubscribed",
+    "emailsSent": 0,
+    "unsubscribedAt": "2025-12-18T18:15:05.003Z"
+  }
+]

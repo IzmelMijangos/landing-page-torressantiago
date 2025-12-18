@@ -6,7 +6,6 @@ import { caseStudiesData, getCaseStudyBySlug, getAllCaseStudySlugs } from "@/app
 import { generateCreativeWorkSchema } from "@/app/lib/utils/seo"
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
-import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
 import { ExternalLink, Check, ArrowRight } from "lucide-react"
 
 export default function CaseStudyDetailPage({ params }: { params: { slug: string } }) {
@@ -31,7 +30,7 @@ export default function CaseStudyDetailPage({ params }: { params: { slug: string
   })
 
   const handleWhatsAppCTA = () => {
-    const phoneNumber = "529516482395"
+    const phoneNumber = "529513183885"
     const message = `Hola, vi el caso de éxito de ${caseStudy.title} y me interesa un proyecto similar`
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,
@@ -327,7 +326,6 @@ export default function CaseStudyDetailPage({ params }: { params: { slug: string
       </main>
 
       <Footer />
-      <WhatsAppFloatingButton />
     </>
   )
 }

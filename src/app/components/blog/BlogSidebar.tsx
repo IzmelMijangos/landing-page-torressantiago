@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllCategories, getAllPosts } from "@/app/lib/utils/blog";
 import { Calendar, ArrowRight } from "lucide-react";
+import NewsletterSubscribe from "@/app/components/lead-capture/NewsletterSubscribe";
 
 interface BlogSidebarProps {
   currentCategory?: string;
@@ -107,6 +108,14 @@ export default function BlogSidebar({ currentCategory, showRecentPosts = false }
         </div>
       )}
 
+      {/* Newsletter Subscription */}
+      <NewsletterSubscribe
+        variant="sidebar"
+        title="Únete a nuestra comunidad"
+        description="Recibe tips de tecnología cada semana"
+        showBenefits={true}
+      />
+
       {/* CTA Card */}
       <div className="bg-gradient-to-br from-accent to-yellow-600 rounded-xl p-6 text-white shadow-lg">
         <h3 className="text-xl font-bold mb-3">¿Necesitas ayuda con tu proyecto?</h3>
@@ -114,7 +123,7 @@ export default function BlogSidebar({ currentCategory, showRecentPosts = false }
           Platiquemos sobre cómo podemos ayudarte a transformar tu negocio con tecnología.
         </p>
         <a
-          href="https://wa.me/529516482395?text=Hola,%20me%20interesa%20una%20consultor%C3%ADa"
+          href="https://wa.me/529513183885?text=Hola,%20me%20interesa%20una%20consultor%C3%ADa"
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full bg-white text-accent text-center font-semibold py-3 rounded-lg hover:bg-stone-50 transition-all hover:shadow-md"

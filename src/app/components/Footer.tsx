@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { Mail, MapPin, Clock, ChevronRight } from "lucide-react"
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa"
+import NewsletterSubscribe from "@/app/components/lead-capture/NewsletterSubscribe";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -81,7 +82,7 @@ export default function Footer() {
             <ul className="space-y-4">
               <li>
                 <Link
-                  href="https://wa.me/529516482395?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20sus%20servicios."
+                  href="https://wa.me/529513183885?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20sus%20servicios."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center group"
@@ -151,27 +152,23 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="text-sm text-gray-500">
-          &copy; {currentYear} Torres Santiago Soluciones Inteligentes. Todos los derechos reservados.
-        </div>
       </div>
 
-      {/* Sección inferior del footer */}
-      {/* <div className="border-t border-gray-800 py-6 bg-black/50">
-        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      {/* Newsletter Section */}
+      <NewsletterSubscribe
+        variant="footer"
+        title="Mantente actualizado"
+        description="Recibe tips de tecnología directo en tu inbox"
+      />
+
+      {/* Copyright */}
+      <div className="border-t border-gray-800 py-6 bg-black/50">
+        <div className="container mx-auto px-4 text-center">
           <div className="text-sm text-gray-500">
             &copy; {currentYear} Torres Santiago Soluciones Inteligentes. Todos los derechos reservados.
           </div>
-          <div className="flex gap-6">
-            <Link href="/terms" className="text-xs hover:text-yellow-400 transition-colors duration-300">
-              Términos del servicio
-            </Link>
-            <Link href="/privacy" className="text-xs hover:text-yellow-400 transition-colors duration-300">
-              Política de privacidad
-            </Link>
-          </div>
         </div>
-      </div> */}
+      </div>
     </footer>
   )
 }

@@ -114,7 +114,7 @@ export default function FooterRedesign() {
               </li>
               <li>
                 <Link
-                  href="https://wa.me/529516482395?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20sus%20servicios."
+                  href="https://wa.me/529513183885?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20sus%20servicios."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center group"

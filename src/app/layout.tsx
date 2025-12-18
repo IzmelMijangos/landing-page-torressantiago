@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { serviciosData, Service } from "@/app/lib/services";
+import ChatbotWidget from "@/app/components/ChatbotWidget";
+import StickyBar from "@/app/components/lead-capture/StickyBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -115,7 +117,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <ChatbotWidget />
+        <StickyBar
+          message="📬 Recibe tips de tecnología cada semana"
+          ctaText="Suscríbete gratis"
+          showAfterScroll={400}
+          variant="top"
+          closable={true}
+        />
+      </body>
     </html>
   );
 }

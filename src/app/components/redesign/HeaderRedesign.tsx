@@ -11,7 +11,7 @@ export default function HeaderRedesign() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = "529516482395";
+    const phoneNumber = "529513183885";
     const message = "Hola, me interesa conocer más sobre sus servicios";
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,

@@ -67,7 +67,7 @@ export const caseStudiesData: CaseStudy[] = [
       { label: "restaurantes", value: "15+" },
       { label: "pedidos/día", value: "50+" },
     ],
-    url: "https://ordy-seven.vercel.app",
+    url: "https://ordy.mx",
     image: "https://placehold.co/600x400/F59E0B/white?text=Ordy",
     tags: ["Marketplace", "Geolocalización", "Admin Panel"],
     technologies: ["Next.js", "TypeScript", "Google Maps API", "Firebase", "Tailwind CSS"],
@@ -86,32 +86,36 @@ export const caseStudiesData: CaseStudy[] = [
     }
   },
   {
-    slug: "sistema-pos",
+    slug: "constructopro",
     title: "ConstructoPro",
-    tagline: "Punto de venta para abarrotes",
-    description: "Control de inventario, ventas, proveedores y reportes en tiempo real para distribuidor local.",
-    client: "Distribuidora San Juan",
-    year: "2023",
-    industry: "Retail",
+    tagline: "ERP para Gestión Integral de Obras de Construcción",
+    description: "Sistema completo de gestión de proyectos de construcción con control de presupuestos, avances, personal y compras en tiempo real.",
+    client: "Grupo Constructor del Sureste",
+    year: "2024",
+    industry: "Construcción",
     metrics: [
-      { label: "productos", value: "800+" },
-      { label: "ahorro tiempo", value: "60%" },
+      { label: "proyectos activos", value: "15+" },
+      { label: "ahorro en costos", value: "40%" },
     ],
-    image: "https://placehold.co/600x400/10B981/white?text=POS+System",
-    tags: ["Sistema Interno", "Inventario", "Reportes"],
-    technologies: ["React", "Node.js", "Express", "MySQL", "Electron"],
-    challenge: "Modernizar el control de inventario y ventas de un distribuidor de abarrotes, eliminando procesos manuales y reduciendo errores.",
-    solution: "Desarrollamos un sistema POS personalizado con control de inventario, gestión de proveedores, reportes en tiempo real y respaldo automático de datos.",
+    url: "https://constructopro.vercel.app",
+    image: "https://placehold.co/600x400/0EA5E9/white?text=ConstructoPro+ERP",
+    tags: ["ERP", "Construcción", "Presupuestos", "Control de Obra"],
+    technologies: ["Next.js 16", "React 19", "TypeScript", "Tailwind CSS 4", "Zustand", "TanStack Query", "Radix UI", "ExcelJS", "Recharts"],
+    challenge: "Empresas constructoras gestionaban proyectos con múltiples herramientas desconectadas (Excel, Word, software de presupuestos independiente), causando pérdida de información, duplicación de trabajo y dificultad para rastrear avances y costos reales.",
+    solution: "Desarrollamos ConstructoPro, un ERP completo con 10 módulos integrados que centraliza toda la operación: desde la importación de catálogos Neodata hasta el control diario de obra, avances físicos/financieros, compras, personal y reportes automatizados.",
     results: [
-      "Gestión de 800+ productos activos",
-      "60% de reducción en tiempo de operaciones",
-      "Eliminación total de errores de inventario manual",
-      "ROI positivo en menos de 4 meses"
+      "Importación automática de catálogos desde Neodata, Excel o CSV",
+      "40% de reducción en costos por mejor control de materiales",
+      "Cálculo automático de explosión de materiales por período",
+      "Control en tiempo real de avance físico vs financiero",
+      "Gestión integrada de 15+ proyectos simultáneos",
+      "Sistema de estimaciones y órdenes de compra automatizado",
+      "Reducción de 70% en tiempo administrativo"
     ],
     testimonial: {
-      quote: "El sistema nos cambió la vida. Ahora sabemos exactamente qué tenemos en inventario y podemos tomar decisiones basadas en datos reales.",
-      author: "María Guadalupe Sánchez",
-      role: "Gerente de Distribuidora San Juan"
+      quote: "ConstructoPro transformó completamente nuestra operación. Antes perdíamos miles de pesos por descontrol en materiales y sobrecostos. Ahora tenemos visibilidad total de cada proyecto en tiempo real.",
+      author: "Ing. Roberto Martínez",
+      role: "Director General, Grupo Constructor del Sureste"
     }
   },
 ]

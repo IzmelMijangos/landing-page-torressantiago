@@ -6,7 +6,7 @@ interface WhatsAppCTAButtonProps {
 
 export default function WhatsAppCTAButton({ serviceName }: WhatsAppCTAButtonProps) {
   const handleWhatsAppCTA = () => {
-    const phoneNumber = "529516482395";
+    const phoneNumber = "529513183885";
     const message = `Hola, me interesa el servicio de ${serviceName}`;
     window.open(
       `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`,

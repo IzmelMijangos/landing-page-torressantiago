@@ -4,7 +4,6 @@ import { getAllPosts, getFeaturedPosts } from "@/app/lib/utils/blog"
 import { generatePageMetadata } from "@/app/lib/utils/seo"
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
-import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
 import BreadcrumbsWithSchema from "@/app/components/BreadcrumbsWithSchema"
 import BlogSidebar from "@/app/components/blog/BlogSidebar"
 import { Calendar, Clock, ArrowRight } from "lucide-react"
@@ -172,7 +171,6 @@ export default function BlogPage() {
       </main>
 
       <Footer />
-      <WhatsAppFloatingButton />
     </>
   )
 }

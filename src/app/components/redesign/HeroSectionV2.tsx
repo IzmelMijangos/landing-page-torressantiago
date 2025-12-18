@@ -7,7 +7,7 @@ import { MessageSquare } from "lucide-react"
 
 export default function HeroSectionV2() {
   const handleWhatsAppClick = () => {
-    const phoneNumber = "529516482395"
+    const phoneNumber = "529513183885"
     const message = "Hola, me interesa conocer más sobre sus servicios"
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, "_blank")
   }
@@ -62,7 +62,7 @@ export default function HeroSectionV2() {
               </GameButton>
 
               <p className="text-sm text-slate-400">
-                Agenda 1 hora de consultoría · Sin compromiso
+                Agenda 30 minutos de consultoría · Sin compromiso
               </p>
             </div>
           </div>

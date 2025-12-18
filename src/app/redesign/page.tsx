@@ -10,7 +10,6 @@ import ServiceDetailModal from "@/app/components/redesign/ServiceDetailModal"
 import CompactCaseStudies from "@/app/components/redesign/CompactCaseStudies"
 import SimplifiedPricing from "@/app/components/redesign/SimplifiedPricing"
 import TestimonialsFAQ from "@/app/components/redesign/TestimonialsFAQ"
-import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
 import Footer from "@/app/components/Footer"
 import GameButton from "@/app/components/GameButton"
 import { MessageSquare } from "lucide-react"
@@ -27,7 +26,7 @@ export default function RedesignPage() {
   const caseStudies = caseStudiesData
 
   const handleWhatsAppCTA = () => {
-    const phoneNumber = "529516482395"
+    const phoneNumber = "529513183885"
     const message = selectedService !== null
       ? `Hola, me interesa el servicio de ${services[selectedService].title}`
       : "Hola, me interesa conocer más sobre sus servicios"
@@ -86,7 +85,7 @@ export default function RedesignPage() {
               Platiquemos de tu proyecto
             </GameButton>
             <p className="text-sm text-stone-500 mt-4">
-              Agenda 1 hora de consultoría · Sin compromiso
+              Agenda 30 minutos de consultoría · Sin compromiso
             </p>
           </div>
         </div>
@@ -128,7 +127,7 @@ export default function RedesignPage() {
             ¿Listo para llevar tu negocio al siguiente nivel?
           </h2>
           <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-            Agenda 1 hora de consultoría gratuita. Analizamos tu proyecto a fondo.
+            Agenda 30 minutos de consultoría gratuita. Analizamos tu proyecto a fondo.
           </p>
           <GameButton
             onClick={handleWhatsAppCTA}
@@ -148,7 +147,6 @@ export default function RedesignPage() {
       <Footer />
 
       {/* WhatsApp flotante */}
-      <WhatsAppFloatingButton />
     </main>
   )
 }

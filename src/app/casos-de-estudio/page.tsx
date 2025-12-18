@@ -5,7 +5,6 @@ import { caseStudiesData } from "@/app/lib/data/case-studies"
 import { generatePageMetadata } from "@/app/lib/utils/seo"
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
-import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
 import BreadcrumbsWithSchema from "@/app/components/BreadcrumbsWithSchema"
 import { ArrowRight } from "lucide-react"
 
@@ -127,7 +126,7 @@ export default function CasosDeEstudioPage() {
               Cuéntanos sobre tu proyecto y descubre cómo podemos ayudarte a alcanzar tus objetivos.
             </p>
             <a
-              href="https://wa.me/529516482395?text=Hola,%20me%20interesa%20iniciar%20un%20proyecto"
+              href="https://wa.me/529513183885?text=Hola,%20me%20interesa%20iniciar%20un%20proyecto"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg px-12 py-5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl inline-flex items-center gap-3"
@@ -145,7 +144,6 @@ export default function CasosDeEstudioPage() {
       </main>
 
       <Footer />
-      <WhatsAppFloatingButton />
     </>
   )
 }

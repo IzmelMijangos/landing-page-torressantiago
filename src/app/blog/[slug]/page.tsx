@@ -7,9 +7,10 @@ import { getPostBySlug, getAllPostSlugs, getRelatedPosts } from "@/app/lib/utils
 import { generateBlogPostingSchema } from "@/app/lib/utils/seo"
 import HeaderRedesign from "@/app/components/redesign/HeaderRedesign"
 import Footer from "@/app/components/Footer"
-import WhatsAppFloatingButton from "@/app/components/redesign/WhatsAppFloatingButton"
 import ShareButton from "@/app/components/blog/ShareButton"
 import BreadcrumbsWithSchema from "@/app/components/BreadcrumbsWithSchema"
+import ExitIntentPopup from "@/app/components/lead-capture/ExitIntentPopup"
+import ScrollTriggeredForm from "@/app/components/lead-capture/ScrollTriggeredForm"
 import { Calendar, Clock, User, Tag, ArrowRight } from "lucide-react"
 
 // Generate static params for all blog posts
@@ -327,7 +328,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
               Platiquemos sobre cómo podemos ayudarte con tecnología.
             </p>
             <a
-              href="https://wa.me/529516482395?text=Hola,%20le%C3%AD%20el%20art%C3%ADculo%20sobre%20${encodeURIComponent(post.title)}"
+              href="https://wa.me/529513183885?text=Hola,%20le%C3%AD%20el%20art%C3%ADculo%20sobre%20${encodeURIComponent(post.title)}"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg px-12 py-5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl inline-flex items-center gap-3"
@@ -341,8 +342,25 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         </section>
       </main>
 
+      {/* Lead Capture Components */}
+      <ExitIntentPopup
+        headline="¡Espera! No te pierdas más contenido como este"
+        subheadline="Suscríbete y recibe artículos sobre tecnología directo en tu inbox"
+        offerTitle="Recibe gratis:"
+        delay={5000}
+        showOnce={true}
+      />
+
+      <ScrollTriggeredForm
+        triggerId="blog-scroll-newsletter"
+        percentage={70}
+        delay={10000}
+        variant="newsletter"
+        headline="¿Te gusta el contenido?"
+        description="Suscríbete para recibir más artículos como este"
+      />
+
       <Footer />
-      <WhatsAppFloatingButton />
     </>
   )
 }

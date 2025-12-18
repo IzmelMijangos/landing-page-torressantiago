@@ -1,0 +1,14 @@
+[
+  {
+    "id": "newsletter_1766080715128",
+    "timestamp": "2025-12-18T17:58:35.128Z",
+    "subject": "Prueba",
+    "postSlugs": [
+      "roi-chatbots-atencion-cliente"
+    ],
+    "recipientCount": 3,
+    "successCount": 3,
+    "failCount": 0,
+    "status": "completed"
+  }
+]

@@ -148,7 +148,7 @@ export const servicesData: ServiceComplete[] = [
       "Recomendaciones de herramientas",
     ],
     includes: [
-      "1 hora de consultoría gratuita",
+      "30 minutos de consultoría gratuita",
       "Documento de recomendaciones",
       "Cotización detallada si procedes",
       "Lista de herramientas sugeridas",

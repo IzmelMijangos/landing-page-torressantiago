@@ -7,8 +7,8 @@ import { motion, AnimatePresence } from "framer-motion"
 export default function WhatsAppFloatingButton() {
   const [isHovered, setIsHovered] = useState(false)
 
-  // Reemplaza con tu número de WhatsApp (formato: 52 + código de área + número)
-  const phoneNumber = "521234567890"
+  // Número de WhatsApp de Torres Santiago
+  const phoneNumber = "529513183885"
   const message = "Hola, me interesa cotizar un proyecto con Torres Santiago"
 
   const handleClick = () => {

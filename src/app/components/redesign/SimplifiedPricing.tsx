@@ -120,7 +120,7 @@ export default function SimplifiedPricing() {
               </div>
               <h4 className="font-bold text-slate-900 mb-2">Platicamos</h4>
               <p className="text-sm text-stone-600">
-                1 hora de consultoría por videollamada para entender tu proyecto a fondo
+                30 minutos de consultoría por videollamada para entender tu proyecto a fondo
               </p>
             </div>
 
