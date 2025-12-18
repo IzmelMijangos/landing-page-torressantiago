@@ -113,26 +113,26 @@ export default function ScrollTriggeredForm({
   // Variante Newsletter
   if (variant === 'newsletter') {
     return (
-      <div className="fixed bottom-4 right-4 z-40 max-w-sm w-full mx-4 sm:mx-0">
+      <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-40 sm:max-w-sm sm:w-full">
         <div
           className={`bg-white rounded-lg shadow-2xl border-2 border-orange-500 transform transition-all duration-300 ${
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
           }`}
         >
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-3 rounded-t-lg flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">📬</span>
-              <h3 className="font-bold">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-2.5 sm:px-4 sm:py-3 rounded-t-lg flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+              <span className="text-xl sm:text-2xl flex-shrink-0">📬</span>
+              <h3 className="font-bold text-sm sm:text-base leading-tight truncate">
                 {headline || '¿Te gusta el contenido?'}
               </h3>
             </div>
             <button
               onClick={handleClose}
-              className="text-white hover:text-gray-200 transition-colors"
+              className="text-white hover:text-gray-200 transition-colors flex-shrink-0 p-1"
               aria-label="Cerrar"
             >
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4 sm:w-5 sm:h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -147,15 +147,15 @@ export default function ScrollTriggeredForm({
             </button>
           </div>
 
-          <div className="p-4">
+          <div className="p-3 sm:p-4">
             {status === 'success' ? (
-              <div className="text-center py-3">
-                <div className="text-4xl mb-2">✅</div>
-                <p className="text-green-700 font-medium">{message}</p>
+              <div className="text-center py-2 sm:py-3">
+                <div className="text-3xl sm:text-4xl mb-2">✅</div>
+                <p className="text-green-700 font-medium text-sm sm:text-base">{message}</p>
               </div>
             ) : (
               <>
-                <p className="text-sm text-gray-600 mb-3">
+                <p className="text-xs sm:text-sm text-gray-600 mb-2.5 sm:mb-3">
                   {description || 'Suscríbete para recibir más artículos como este'}
                 </p>
 
@@ -166,14 +166,14 @@ export default function ScrollTriggeredForm({
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="tu@email.com"
                     required
-                    className="w-full px-3 py-2 rounded border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-3 py-2.5 sm:py-2 rounded border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                     disabled={status === 'loading'}
                   />
 
                   <button
                     type="submit"
                     disabled={status === 'loading'}
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 rounded transition-colors disabled:opacity-50 text-sm"
+                    className="w-full bg-orange-600 hover:bg-orange-700 active:bg-orange-800 text-white font-semibold py-2.5 sm:py-2 rounded transition-colors disabled:opacity-50 text-sm touch-manipulation"
                   >
                     {status === 'loading' ? 'Enviando...' : 'Suscribirme'}
                   </button>
@@ -192,26 +192,26 @@ export default function ScrollTriggeredForm({
 
   // Variante Consultation (default)
   return (
-    <div className="fixed bottom-4 right-4 z-40 max-w-md w-full mx-4 sm:mx-0">
+    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-40 sm:max-w-md sm:w-full">
       <div
         className={`bg-white rounded-lg shadow-2xl border-2 border-orange-500 transform transition-all duration-300 ${
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
         }`}
       >
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-3 rounded-t-lg flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">⏱️</span>
-            <h3 className="font-bold">
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-2.5 sm:px-4 sm:py-3 rounded-t-lg flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+            <span className="text-xl sm:text-2xl flex-shrink-0">⏱️</span>
+            <h3 className="font-bold text-sm sm:text-base leading-tight line-clamp-2">
               {headline || '¿Tienes 30 minutos esta semana?'}
             </h3>
           </div>
           <button
             onClick={handleClose}
-            className="text-white hover:text-gray-200 transition-colors"
+            className="text-white hover:text-gray-200 transition-colors flex-shrink-0 p-1"
             aria-label="Cerrar"
           >
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4 sm:w-5 sm:h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -226,16 +226,16 @@ export default function ScrollTriggeredForm({
           </button>
         </div>
 
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           {status === 'success' ? (
-            <div className="text-center py-3">
-              <div className="text-4xl mb-2">✅</div>
-              <p className="text-green-700 font-medium">{message}</p>
+            <div className="text-center py-2 sm:py-3">
+              <div className="text-3xl sm:text-4xl mb-2">✅</div>
+              <p className="text-green-700 font-medium text-sm sm:text-base">{message}</p>
               <p className="text-xs text-gray-600 mt-1">Nos comunicaremos pronto</p>
             </div>
           ) : (
             <>
-              <p className="text-sm text-gray-600 mb-3">
+              <p className="text-xs sm:text-sm text-gray-600 mb-2.5 sm:mb-3">
                 {description || 'Agenda una consultoría gratuita sobre este tema'}
               </p>
 
@@ -246,7 +246,7 @@ export default function ScrollTriggeredForm({
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Tu nombre"
                   required
-                  className="w-full px-3 py-2 rounded border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2.5 sm:py-2 rounded border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   disabled={status === 'loading'}
                 />
 
@@ -256,7 +256,7 @@ export default function ScrollTriggeredForm({
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@email.com"
                   required
-                  className="w-full px-3 py-2 rounded border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2.5 sm:py-2 rounded border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   disabled={status === 'loading'}
                 />
 
@@ -265,14 +265,14 @@ export default function ScrollTriggeredForm({
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Teléfono (opcional)"
-                  className="w-full px-3 py-2 rounded border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-3 py-2.5 sm:py-2 rounded border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   disabled={status === 'loading'}
                 />
 
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 rounded transition-colors disabled:opacity-50 text-sm"
+                  className="w-full bg-orange-600 hover:bg-orange-700 active:bg-orange-800 text-white font-semibold py-2.5 sm:py-2 rounded transition-colors disabled:opacity-50 text-sm touch-manipulation"
                 >
                   {status === 'loading' ? 'Enviando...' : 'Agendar consultoría'}
                 </button>
