@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server'
-import { readFile } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
+import { query } from '@/app/lib/db'
 
 export const dynamic = 'force-dynamic'
 
-const DATA_DIR = path.join(process.cwd(), 'data')
-const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'newsletter-subscribers.json')
-const DOWNLOADS_FILE = path.join(DATA_DIR, 'lead-magnet-downloads.json')
-const LEADS_FILE = path.join(DATA_DIR, 'leads.json')
-
-// GET: Exportar suscriptores en diferentes formatos
+// GET: Exportar datos en diferentes formatos
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
@@ -21,27 +14,57 @@ export async function GET(req: Request) {
 
     // Cargar datos según el tipo
     if (type === 'newsletter' || type === 'all') {
-      if (existsSync(SUBSCRIBERS_FILE)) {
-        const subscribersData = await readFile(SUBSCRIBERS_FILE, 'utf-8')
-        const subscribers = JSON.parse(subscribersData)
-        data = [...data, ...subscribers.filter((s: any) => s.status === 'active')]
-      }
+      const subscribersResult = await query(
+        'SELECT * FROM newsletter_subscribers WHERE status = $1 ORDER BY signup_date DESC',
+        ['active']
+      )
+      data = [
+        ...data,
+        ...subscribersResult.rows.map(row => ({
+          email: row.email,
+          name: row.name,
+          source: row.source,
+          timestamp: row.signup_date,
+          status: row.status,
+          type: 'newsletter'
+        }))
+      ]
     }
 
     if (type === 'downloads' || type === 'all') {
-      if (existsSync(DOWNLOADS_FILE)) {
-        const downloadsData = await readFile(DOWNLOADS_FILE, 'utf-8')
-        const downloads = JSON.parse(downloadsData)
-        data = [...data, ...downloads]
-      }
+      const downloadsResult = await query(
+        'SELECT * FROM lead_magnet_downloads ORDER BY timestamp DESC'
+      )
+      data = [
+        ...data,
+        ...downloadsResult.rows.map(row => ({
+          email: row.email,
+          name: row.name,
+          source: row.source,
+          timestamp: row.timestamp,
+          resource: row.resource,
+          type: 'download'
+        }))
+      ]
     }
 
     if (type === 'leads' || type === 'all') {
-      if (existsSync(LEADS_FILE)) {
-        const leadsData = await readFile(LEADS_FILE, 'utf-8')
-        const leads = JSON.parse(leadsData)
-        data = [...data, ...leads]
-      }
+      const leadsResult = await query(
+        'SELECT * FROM leads ORDER BY timestamp DESC'
+      )
+      data = [
+        ...data,
+        ...leadsResult.rows.map(row => ({
+          email: row.email,
+          name: row.name,
+          phone: row.phone,
+          service: row.service,
+          source: row.source,
+          timestamp: row.timestamp,
+          score: row.score,
+          type: 'lead'
+        }))
+      ]
     }
 
     // Formato JSON
@@ -49,7 +72,8 @@ export async function GET(req: Request) {
       return NextResponse.json({
         success: true,
         count: data.length,
-        data
+        data,
+        exportDate: new Date().toISOString()
       })
     }
 
@@ -59,29 +83,34 @@ export async function GET(req: Request) {
       return new NextResponse(csv, {
         headers: {
           'Content-Type': 'text/csv',
-          'Content-Disposition': `attachment; filename="suscriptores-${new Date().toISOString().split('T')[0]}.csv"`
+          'Content-Disposition': `attachment; filename="leads-export-${new Date().toISOString().split('T')[0]}.csv"`
         }
       })
     }
 
     // Formato Brevo (lista de contactos)
     if (format === 'brevo') {
-      const brevoContacts = data.map(item => ({
-        email: item.email,
-        attributes: {
-          FIRSTNAME: item.name || '',
-          LASTNAME: '',
-          // Agregar campos personalizados según necesites
-          SOURCE: item.source || 'unknown',
-          SUBSCRIBED_DATE: item.timestamp || new Date().toISOString()
-        }
-      }))
+      const brevoContacts = data
+        .filter(item => item.email) // Solo los que tienen email
+        .map(item => ({
+          email: item.email,
+          attributes: {
+            FIRSTNAME: item.name || '',
+            LASTNAME: '',
+            SOURCE: item.source || 'unknown',
+            TYPE: item.type || 'unknown',
+            SUBSCRIBED_DATE: item.timestamp || new Date().toISOString(),
+            RESOURCE: item.resource || '',
+            SCORE: item.score || 0
+          }
+        }))
 
       return NextResponse.json({
         success: true,
         count: brevoContacts.length,
         contacts: brevoContacts,
-        instructions: 'Copia estos contactos y súbelos a Brevo en: Contacts > Import Contacts'
+        instructions: 'Copia estos contactos y súbelos a Brevo en: Contacts > Import Contacts',
+        exportDate: new Date().toISOString()
       })
     }
 
@@ -98,21 +127,24 @@ export async function GET(req: Request) {
 // Función para convertir a CSV
 function convertToCSV(data: any[]): string {
   if (data.length === 0) {
-    return 'email,nombre,fecha,fuente,estado\n'
+    return 'tipo,email,nombre,telefono,fecha,fuente,puntuacion,recurso\n'
   }
 
   // Headers
-  const headers = ['email', 'nombre', 'fecha', 'fuente', 'estado']
+  const headers = ['tipo', 'email', 'nombre', 'telefono', 'fecha', 'fuente', 'puntuacion', 'recurso']
   let csv = headers.join(',') + '\n'
 
   // Rows
   data.forEach(item => {
     const row = [
+      item.type || '',
       item.email || '',
       item.name || '',
+      item.phone || '',
       item.timestamp ? new Date(item.timestamp).toLocaleDateString('es-MX') : '',
-      item.source || 'unknown',
-      item.status || 'active'
+      item.source || '',
+      item.score || '',
+      item.resource || ''
     ]
     csv += row.map(field => `"${field}"`).join(',') + '\n'
   })

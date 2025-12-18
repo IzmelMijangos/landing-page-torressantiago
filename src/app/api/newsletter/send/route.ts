@@ -1,49 +1,48 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
-
-const DATA_DIR = path.join(process.cwd(), 'data')
-const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'newsletter-subscribers.json')
-const SENT_NEWSLETTERS_FILE = path.join(DATA_DIR, 'sent-newsletters.json')
+import { query } from '@/app/lib/db'
 
 interface Subscriber {
-  id: string
+  id: number
   email: string
   name?: string
   status: 'active' | 'unsubscribed'
 }
 
 interface NewsletterSend {
-  id: string
-  timestamp: string
+  newsletter_id: string
   subject: string
-  postSlugs: string[]
-  recipientCount: number
-  successCount: number
-  failCount: number
+  post_slugs: string[]
+  recipient_count: number
+  success_count: number
+  fail_count: number
   status: 'sending' | 'completed' | 'failed'
+  test_mode: boolean
 }
 
 async function getActiveSubscribers(): Promise<Subscriber[]> {
-  if (!existsSync(SUBSCRIBERS_FILE)) {
-    return []
-  }
-  const data = await readFile(SUBSCRIBERS_FILE, 'utf-8')
-  const subscribers = JSON.parse(data)
-  return subscribers.filter((s: Subscriber) => s.status === 'active')
+  const result = await query(
+    'SELECT id, email, name, status FROM newsletter_subscribers WHERE status = $1',
+    ['active']
+  )
+  return result.rows
 }
 
 async function saveSentNewsletter(newsletter: NewsletterSend) {
-  let newsletters: NewsletterSend[] = []
-
-  if (existsSync(SENT_NEWSLETTERS_FILE)) {
-    const data = await readFile(SENT_NEWSLETTERS_FILE, 'utf-8')
-    newsletters = JSON.parse(data)
-  }
-
-  newsletters.push(newsletter)
-  await writeFile(SENT_NEWSLETTERS_FILE, JSON.stringify(newsletters, null, 2))
+  await query(
+    `INSERT INTO sent_newsletters
+      (newsletter_id, subject, post_slugs, recipient_count, success_count, fail_count, status, test_mode)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    [
+      newsletter.newsletter_id,
+      newsletter.subject,
+      newsletter.post_slugs,
+      newsletter.recipient_count,
+      newsletter.success_count,
+      newsletter.fail_count,
+      newsletter.status,
+      newsletter.test_mode
+    ]
+  )
 }
 
 // POST: Enviar newsletter
@@ -84,21 +83,20 @@ export async function POST(req: Request) {
 
     // Crear registro de envío
     const newsletterSend: NewsletterSend = {
-      id: `newsletter_${Date.now()}`,
-      timestamp: new Date().toISOString(),
+      newsletter_id: `newsletter_${Date.now()}`,
       subject: subject || 'Nuevos artículos de Torres Santiago',
-      postSlugs,
-      recipientCount: recipients.length,
-      successCount: 0,
-      failCount: 0,
-      status: 'sending'
+      post_slugs: postSlugs,
+      recipient_count: recipients.length,
+      success_count: 0,
+      fail_count: 0,
+      status: 'sending',
+      test_mode: testMode || false
     }
 
     let successCount = 0
     let failCount = 0
 
     // Obtener información de los posts (simulado - deberías obtenerlo de tu sistema)
-    // Por ahora usaremos los slugs directamente
     const posts = postSlugs.map((slug: string) => ({
       slug,
       title: slug.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
@@ -133,8 +131,8 @@ export async function POST(req: Request) {
       }
     }
 
-    newsletterSend.successCount = successCount
-    newsletterSend.failCount = failCount
+    newsletterSend.success_count = successCount
+    newsletterSend.fail_count = failCount
     newsletterSend.status = failCount === 0 ? 'completed' : 'failed'
 
     await saveSentNewsletter(newsletterSend)
@@ -158,14 +156,23 @@ export async function POST(req: Request) {
 // GET: Obtener historial de newsletters enviados
 export async function GET() {
   try {
-    if (!existsSync(SENT_NEWSLETTERS_FILE)) {
-      return NextResponse.json({ newsletters: [] })
-    }
+    const result = await query(
+      'SELECT * FROM sent_newsletters ORDER BY timestamp DESC LIMIT 50'
+    )
 
-    const data = await readFile(SENT_NEWSLETTERS_FILE, 'utf-8')
-    const newsletters = JSON.parse(data)
-
-    return NextResponse.json({ newsletters })
+    return NextResponse.json({
+      newsletters: result.rows.map(n => ({
+        id: n.newsletter_id,
+        timestamp: n.timestamp,
+        subject: n.subject,
+        postSlugs: n.post_slugs,
+        recipientCount: n.recipient_count,
+        successCount: n.success_count,
+        failCount: n.fail_count,
+        status: n.status,
+        testMode: n.test_mode
+      }))
+    })
   } catch (error: any) {
     console.error('Error al obtener newsletters:', error)
     return NextResponse.json(

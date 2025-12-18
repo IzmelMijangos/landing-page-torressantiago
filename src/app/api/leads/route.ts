@@ -1,14 +1,9 @@
 import { NextResponse } from 'next/server'
-import { writeFile, readFile, mkdir } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
-
-// Ruta donde se guardarán los leads (temporal, cambiar a DB después)
-const LEADS_DIR = path.join(process.cwd(), 'data')
-const LEADS_FILE = path.join(LEADS_DIR, 'leads.json')
+import { query } from '@/app/lib/db'
 
 interface Lead {
-  id: string
+  id: number
+  lead_id: string
   timestamp: string
   source: string
   score: number
@@ -20,60 +15,43 @@ interface Lead {
   notified: boolean
 }
 
-async function ensureDataDir() {
-  if (!existsSync(LEADS_DIR)) {
-    await mkdir(LEADS_DIR, { recursive: true })
-  }
-  if (!existsSync(LEADS_FILE)) {
-    await writeFile(LEADS_FILE, JSON.stringify([]))
-  }
-}
-
-async function getLeads(): Promise<Lead[]> {
-  await ensureDataDir()
-  const data = await readFile(LEADS_FILE, 'utf-8')
-  return JSON.parse(data)
-}
-
-async function saveLeads(leads: Lead[]) {
-  await ensureDataDir()
-  await writeFile(LEADS_FILE, JSON.stringify(leads, null, 2))
-}
-
 export async function POST(req: Request) {
   try {
     const leadData = await req.json()
 
-    const lead: Lead = {
-      id: `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date().toISOString(),
-      source: leadData.source || 'unknown',
-      score: leadData.score || 0,
-      name: leadData.name,
-      email: leadData.email,
-      phone: leadData.phone,
-      service: leadData.service,
-      conversation: leadData.lastMessages || leadData.conversation || [],
-      notified: false
-    }
+    const leadId = `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    // Guardar lead
-    const leads = await getLeads()
-    leads.push(lead)
-    await saveLeads(leads)
+    // Insertar lead en la base de datos
+    const insertQuery = `
+      INSERT INTO leads
+        (lead_id, source, score, name, email, phone, service, conversation, notified)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, FALSE)
+      RETURNING *
+    `
+    const insertResult = await query(insertQuery, [
+      leadId,
+      leadData.source || 'unknown',
+      leadData.score || 0,
+      leadData.name || null,
+      leadData.email || null,
+      leadData.phone || null,
+      leadData.service || null,
+      JSON.stringify(leadData.lastMessages || leadData.conversation || [])
+    ])
 
-    // Si es lead caliente, notificar (score >= 50 con datos de contacto)
+    const lead = insertResult.rows[0]
+
+    // Si es lead caliente, notificar (score >= 50)
     if (lead.score >= 50) {
       console.log(`🔔 [Leads API] Lead caliente (score: ${lead.score}), enviando notificación...`)
       try {
-        // Pasar TODOS los datos originales al endpoint de notificación
         const notifyResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/notify`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             lead: {
-              ...leadData,  // Pasar todos los datos originales (incluye confidence, lastMessages, signals, etc.)
-              id: lead.id,
+              ...leadData,
+              id: lead.lead_id,
               timestamp: lead.timestamp
             }
           })
@@ -81,12 +59,15 @@ export async function POST(req: Request) {
 
         if (notifyResponse.ok) {
           console.log('✅ [Leads API] Notificación enviada exitosamente')
+
+          // Marcar como notificado
+          await query(
+            'UPDATE leads SET notified = TRUE WHERE lead_id = $1',
+            [lead.lead_id]
+          )
         } else {
           console.error('❌ [Leads API] Error en respuesta de notificación:', await notifyResponse.text())
         }
-
-        lead.notified = true
-        await saveLeads(leads)
       } catch (notifyError) {
         console.error('❌ [Leads API] Error al notificar:', notifyError)
       }
@@ -94,7 +75,20 @@ export async function POST(req: Request) {
       console.log(`⏭️ [Leads API] Lead no caliente (score: ${lead.score}), sin notificación`)
     }
 
-    return NextResponse.json({ success: true, lead })
+    return NextResponse.json({
+      success: true,
+      lead: {
+        id: lead.lead_id,
+        timestamp: lead.timestamp,
+        source: lead.source,
+        score: lead.score,
+        name: lead.name,
+        email: lead.email,
+        phone: lead.phone,
+        service: lead.service,
+        notified: lead.notified
+      }
+    })
   } catch (error: any) {
     console.error('Error al guardar lead:', error)
     return NextResponse.json(
@@ -106,27 +100,55 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const leads = await getLeads()
+    // Obtener todos los leads
+    const leadsQuery = 'SELECT * FROM leads ORDER BY timestamp DESC'
+    const leadsResult = await query(leadsQuery)
+    const leads = leadsResult.rows
 
     // Estadísticas
+    const statsQuery = `
+      SELECT
+        COUNT(*)::int as total,
+        COUNT(CASE WHEN score >= 80 THEN 1 END)::int as hot,
+        COUNT(CASE WHEN score >= 50 AND score < 80 THEN 1 END)::int as warm,
+        COUNT(CASE WHEN score < 50 THEN 1 END)::int as cold,
+        COUNT(CASE WHEN source = 'chatbot' THEN 1 END)::int as chatbot,
+        COUNT(CASE WHEN source = 'contact_form' THEN 1 END)::int as contact_form,
+        COUNT(CASE WHEN source = 'whatsapp' THEN 1 END)::int as whatsapp,
+        COUNT(CASE WHEN DATE(timestamp) = CURRENT_DATE THEN 1 END)::int as today
+      FROM leads
+    `
+    const statsResult = await query(statsQuery)
+    const statsRow = statsResult.rows[0]
+
     const stats = {
-      total: leads.length,
-      hot: leads.filter(l => l.score >= 80).length,
-      warm: leads.filter(l => l.score >= 50 && l.score < 80).length,
-      cold: leads.filter(l => l.score < 50).length,
+      total: statsRow.total,
+      hot: statsRow.hot,
+      warm: statsRow.warm,
+      cold: statsRow.cold,
       sources: {
-        chatbot: leads.filter(l => l.source === 'chatbot').length,
-        form: leads.filter(l => l.source === 'contact_form').length,
-        whatsapp: leads.filter(l => l.source === 'whatsapp').length
+        chatbot: statsRow.chatbot,
+        form: statsRow.contact_form,
+        whatsapp: statsRow.whatsapp
       },
-      today: leads.filter(l => {
-        const leadDate = new Date(l.timestamp)
-        const today = new Date()
-        return leadDate.toDateString() === today.toDateString()
-      }).length
+      today: statsRow.today
     }
 
-    return NextResponse.json({ leads, stats })
+    return NextResponse.json({
+      leads: leads.map(l => ({
+        id: l.lead_id,
+        timestamp: l.timestamp,
+        source: l.source,
+        score: l.score,
+        name: l.name,
+        email: l.email,
+        phone: l.phone,
+        service: l.service,
+        conversation: l.conversation,
+        notified: l.notified
+      })),
+      stats
+    })
   } catch (error: any) {
     console.error('Error al obtener leads:', error)
     return NextResponse.json(

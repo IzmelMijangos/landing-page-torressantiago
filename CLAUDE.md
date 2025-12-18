@@ -14,6 +14,8 @@ This is a Next.js 14 landing page for Torres Santiago, a technology solutions co
 - Framer Motion (animations)
 - Swiper (carousels)
 - Axios (API calls)
+- PostgreSQL (Neon) - Database
+- node-postgres (pg) - Database client
 
 ## Development Commands
 
@@ -37,6 +39,15 @@ npm start
 **Linting:**
 ```bash
 npm run lint
+```
+
+**Database commands:**
+```bash
+# Create database schema
+npm run db:schema
+
+# Migrate data from JSON to PostgreSQL (one-time migration)
+npm run db:migrate
 ```
 
 ## Project Structure
@@ -118,10 +129,37 @@ import Header from "@/app/components/Header"
 
 ### API Routes
 
-- Email sending endpoint: `/api/send_email` (POST)
-- Uses Brevo API for transactional emails
-- Requires `BREVO_API_KEY` environment variable
-- Accepts: `{ name, email, serviceType, description }`
+#### Email & Contact
+- **`/api/send_email`** (POST): Contact form emails via Brevo API
+  - Accepts: `{ name, email, serviceType, description }`
+
+#### Leads Management
+- **`/api/leads`** (GET, POST): Lead capture and retrieval
+  - GET: Returns all leads with statistics
+  - POST: Creates new lead (auto-notifies if score >= 50)
+  - Data stored in PostgreSQL `leads` table
+
+#### Newsletter
+- **`/api/leads/subscribe`** (GET, POST): Newsletter subscriptions
+  - GET: Returns subscriber statistics
+  - POST: Creates new subscription with welcome email
+  - Data stored in PostgreSQL `newsletter_subscribers` table
+
+- **`/api/newsletter/send`** (GET, POST): Send newsletters
+  - GET: Returns newsletter send history
+  - POST: Sends newsletter to active subscribers
+  - Data stored in PostgreSQL `sent_newsletters` table
+
+#### Lead Magnets
+- **`/api/leads/download`** (GET, POST): Lead magnet downloads
+  - GET: Returns download statistics
+  - POST: Triggers download email with resource
+  - Data stored in PostgreSQL `lead_magnet_downloads` table
+
+#### Data Export
+- **`/api/leads/export`** (GET): Export data in multiple formats
+  - Formats: JSON, CSV, Brevo contacts
+  - Types: leads, newsletter, downloads, all
 
 ### Services Data
 
@@ -153,10 +191,54 @@ Configuration in `app.yaml`:
 - Runtime: Node.js 18
 - Basic scaling with max 1 instance
 
+## Database Architecture
+
+### PostgreSQL (Neon)
+
+The application uses PostgreSQL hosted on Neon for data persistence. Previously used JSON files, now fully migrated to database.
+
+**Tables:**
+1. **`newsletter_subscribers`** - Newsletter subscriptions
+   - Unique email constraint
+   - Status tracking (active/unsubscribed)
+   - Source attribution (sidebar, inline, footer, etc)
+
+2. **`leads`** - Sales leads from chatbot and forms
+   - Score-based classification (0-100)
+   - Conversation history stored as JSONB
+   - Auto-notification for hot leads (score >= 50)
+
+3. **`lead_magnet_downloads`** - Resource download tracking
+   - Links email to downloaded resource
+   - Tracks email delivery status
+
+4. **`sent_newsletters`** - Newsletter send history
+   - Post slugs array
+   - Success/fail counts
+   - Test mode flag
+
+**Database utilities:**
+- Connection pool management in `src/app/lib/db.ts`
+- Schema definition in `database/schema.sql`
+- Migration script in `database/migrate-json-to-db.ts`
+- Full documentation in `database/README.md`
+
 ## Environment Variables
 
-Required environment variables:
-- `BREVO_API_KEY`: API key for Brevo email service (used in `/api/send_email`)
+**Required:**
+- `DATABASE_URL`: PostgreSQL connection string (Neon)
+  - Format: `postgresql://user:password@host.neon.tech/db?sslmode=require`
+- `BREVO_API_KEY`: API key for Brevo email service
+- `OPENAI_API_KEY`: API key for chatbot functionality
+
+**Optional:**
+- `NEXT_PUBLIC_BASE_URL`: Base URL for the site (default: localhost:3000)
+- `TELEGRAM_BOT_TOKEN`: For Telegram notifications
+- `TELEGRAM_CHAT_ID`: Telegram chat for notifications
+- `GOOGLE_AI_API_KEY`: Google Gemini API key
+- `HUBSPOT_API_KEY`: HubSpot CRM integration
+
+See `.env.example` for complete list and setup instructions.
 
 ## Image Handling
 

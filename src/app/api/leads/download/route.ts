@@ -1,26 +1,22 @@
 import { NextResponse } from 'next/server'
-import { writeFile, readFile, mkdir } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
-
-const DATA_DIR = path.join(process.cwd(), 'data')
-const DOWNLOADS_FILE = path.join(DATA_DIR, 'lead-magnet-downloads.json')
+import { query } from '@/app/lib/db'
 
 interface LeadMagnetDownload {
-  id: string
+  id: number
+  download_id: string
   email: string
   name?: string
-  resource: string // ID del recurso descargado
+  resource: string
   timestamp: string
-  source: string // página desde donde descargó
-  emailSent: boolean
+  source: string
+  email_sent: boolean
 }
 
 interface LeadMagnet {
   id: string
   title: string
   description: string
-  filename: string // Nombre del archivo PDF
+  filename: string
   emailSubject: string
   emailBody: string
 }
@@ -51,26 +47,6 @@ const LEAD_MAGNETS: Record<string, LeadMagnet> = {
     emailSubject: '🔒 Tu Plan de Ciberseguridad para PyMEs',
     emailBody: 'Descarga tu plantilla de plan de ciberseguridad lista para implementar.'
   }
-}
-
-async function ensureDataDir() {
-  if (!existsSync(DATA_DIR)) {
-    await mkdir(DATA_DIR, { recursive: true })
-  }
-  if (!existsSync(DOWNLOADS_FILE)) {
-    await writeFile(DOWNLOADS_FILE, JSON.stringify([]))
-  }
-}
-
-async function getDownloads(): Promise<LeadMagnetDownload[]> {
-  await ensureDataDir()
-  const data = await readFile(DOWNLOADS_FILE, 'utf-8')
-  return JSON.parse(data)
-}
-
-async function saveDownloads(downloads: LeadMagnetDownload[]) {
-  await ensureDataDir()
-  await writeFile(DOWNLOADS_FILE, JSON.stringify(downloads, null, 2))
 }
 
 function isValidEmail(email: string): boolean {
@@ -106,27 +82,36 @@ export async function POST(req: Request) {
       )
     }
 
-    const downloads = await getDownloads()
+    const downloadId = `download_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    // Crear registro de descarga
-    const newDownload: LeadMagnetDownload = {
-      id: `download_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      email: email.toLowerCase().trim(),
-      name: name?.trim(),
-      resource: resource,
-      timestamp: new Date().toISOString(),
-      source: source || 'unknown',
-      emailSent: false
-    }
+    // Insertar registro de descarga
+    const insertQuery = `
+      INSERT INTO lead_magnet_downloads
+        (download_id, email, name, resource, source, email_sent)
+      VALUES ($1, $2, $3, $4, $5, FALSE)
+      RETURNING *
+    `
+    const insertResult = await query(insertQuery, [
+      downloadId,
+      email.toLowerCase().trim(),
+      name?.trim() || null,
+      resource,
+      source || 'unknown'
+    ])
 
-    downloads.push(newDownload)
-    await saveDownloads(downloads)
+    const download = insertResult.rows[0]
 
     // Enviar email con el recurso
     try {
-      await sendLeadMagnetEmail(newDownload, leadMagnet)
-      newDownload.emailSent = true
-      await saveDownloads(downloads)
+      await sendLeadMagnetEmail(download, leadMagnet)
+
+      // Marcar como enviado
+      await query(
+        'UPDATE lead_magnet_downloads SET email_sent = TRUE WHERE download_id = $1',
+        [downloadId]
+      )
+
+      download.email_sent = true
     } catch (emailError) {
       console.error('Error al enviar email con lead magnet:', emailError)
       return NextResponse.json(
@@ -140,7 +125,12 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: '¡Revisa tu email! Te hemos enviado el recurso.',
-      download: newDownload
+      download: {
+        id: download.download_id,
+        email: download.email,
+        resource: download.resource,
+        timestamp: download.timestamp
+      }
     })
   } catch (error: any) {
     console.error('Error en lead magnet download:', error)
@@ -157,33 +147,64 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url)
     const resource = searchParams.get('resource')
 
-    const downloads = await getDownloads()
+    let downloadsQuery = 'SELECT * FROM lead_magnet_downloads ORDER BY timestamp DESC'
+    let downloadsParams: any[] = []
 
-    let filteredDownloads = downloads
     if (resource) {
-      filteredDownloads = downloads.filter(d => d.resource === resource)
+      downloadsQuery = 'SELECT * FROM lead_magnet_downloads WHERE resource = $1 ORDER BY timestamp DESC'
+      downloadsParams = [resource]
     }
 
+    const downloadsResult = await query(downloadsQuery, downloadsParams)
+    const downloads = downloadsResult.rows
+
+    // Estadísticas por recurso
+    const statsQuery = `
+      SELECT
+        resource,
+        COUNT(*)::int as count
+      FROM lead_magnet_downloads
+      GROUP BY resource
+    `
+    const statsResult = await query(statsQuery)
+
+    const byResource: Record<string, number> = {}
+    statsResult.rows.forEach(row => {
+      byResource[row.resource] = row.count
+    })
+
+    // Estadísticas de hoy y esta semana
+    const timeStatsQuery = `
+      SELECT
+        COUNT(*)::int as total,
+        COUNT(CASE WHEN DATE(timestamp) = CURRENT_DATE THEN 1 END)::int as today,
+        COUNT(CASE WHEN timestamp >= CURRENT_DATE - INTERVAL '7 days' THEN 1 END)::int as this_week
+      FROM lead_magnet_downloads
+      ${resource ? 'WHERE resource = $1' : ''}
+    `
+    const timeStatsResult = await query(
+      timeStatsQuery,
+      resource ? [resource] : []
+    )
+    const timeStats = timeStatsResult.rows[0]
+
     const stats = {
-      total: filteredDownloads.length,
-      byResource: Object.keys(LEAD_MAGNETS).reduce((acc, key) => {
-        acc[key] = downloads.filter(d => d.resource === key).length
-        return acc
-      }, {} as Record<string, number>),
-      today: filteredDownloads.filter(d => {
-        const downloadDate = new Date(d.timestamp)
-        const today = new Date()
-        return downloadDate.toDateString() === today.toDateString()
-      }).length,
-      thisWeek: filteredDownloads.filter(d => {
-        const downloadDate = new Date(d.timestamp)
-        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-        return downloadDate >= weekAgo
-      }).length
+      total: timeStats.total,
+      byResource,
+      today: timeStats.today,
+      thisWeek: timeStats.this_week
     }
 
     return NextResponse.json({
-      downloads: filteredDownloads,
+      downloads: downloads.map(d => ({
+        id: d.download_id,
+        email: d.email,
+        name: d.name,
+        resource: d.resource,
+        timestamp: d.timestamp,
+        source: d.source,
+        emailSent: d.email_sent
+      })),
       stats,
       availableResources: LEAD_MAGNETS
     })
@@ -197,7 +218,7 @@ export async function GET(req: Request) {
 }
 
 // Función para enviar email con lead magnet
-async function sendLeadMagnetEmail(download: LeadMagnetDownload, leadMagnet: LeadMagnet) {
+async function sendLeadMagnetEmail(download: any, leadMagnet: LeadMagnet) {
   const brevoApiKey = process.env.BREVO_API_KEY
 
   if (!brevoApiKey) {
@@ -275,7 +296,7 @@ async function sendLeadMagnetEmail(download: LeadMagnetDownload, leadMagnet: Lea
               <a href="https://www.torressantiago.com" style="color: #c17207; text-decoration: none;">www.torressantiago.com</a>
             </p>
             <p>
-              WhatsApp: <a href="https://wa.me/529515831593" style="color: #c17207; text-decoration: none;">+52 951 583 1593</a>
+              WhatsApp: <a href="https://wa.me/529513183885" style="color: #c17207; text-decoration: none;">+52 951 318 3885</a>
             </p>
           </div>
         </div>
@@ -290,7 +311,6 @@ async function sendLeadMagnetEmail(download: LeadMagnetDownload, leadMagnet: Lea
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      // Crear AbortController con timeout de 30 segundos
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000)
 
@@ -313,17 +333,15 @@ async function sendLeadMagnetEmail(download: LeadMagnetDownload, leadMagnet: Lea
       }
 
       console.log(`📨 Lead magnet enviado a ${download.email}: ${leadMagnet.title}`)
-      return // Éxito, salir del loop
+      return // Éxito
     } catch (error: any) {
       lastError = error
 
-      // Si no es el último intento, esperar antes de reintentar
       if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt)) // 1s, 2s, 3s
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
       }
     }
   }
 
-  // Si llegamos aquí, todos los intentos fallaron
   throw lastError
 }

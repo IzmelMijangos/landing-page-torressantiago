@@ -1,41 +1,15 @@
 import { NextResponse } from 'next/server'
-import { writeFile, readFile, mkdir } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
-
-// Ruta donde se guardarán las suscripciones
-const DATA_DIR = path.join(process.cwd(), 'data')
-const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'newsletter-subscribers.json')
+import { query } from '@/app/lib/db'
 
 interface Subscriber {
-  id: string
+  id: number
   email: string
   name?: string
-  timestamp: string
-  source: 'sidebar' | 'inline' | 'footer' | 'popup' | 'sticky-bar'
-  page?: string
-  status: 'active' | 'unsubscribed'
-  emailsSent: number
-}
-
-async function ensureDataDir() {
-  if (!existsSync(DATA_DIR)) {
-    await mkdir(DATA_DIR, { recursive: true })
-  }
-  if (!existsSync(SUBSCRIBERS_FILE)) {
-    await writeFile(SUBSCRIBERS_FILE, JSON.stringify([]))
-  }
-}
-
-async function getSubscribers(): Promise<Subscriber[]> {
-  await ensureDataDir()
-  const data = await readFile(SUBSCRIBERS_FILE, 'utf-8')
-  return JSON.parse(data)
-}
-
-async function saveSubscribers(subscribers: Subscriber[]) {
-  await ensureDataDir()
-  await writeFile(SUBSCRIBERS_FILE, JSON.stringify(subscribers, null, 2))
+  source: string
+  signup_page?: string
+  signup_date: string
+  status: string
+  emails_sent: number
 }
 
 // Validación simple de email
@@ -64,21 +38,34 @@ export async function POST(req: Request) {
       )
     }
 
-    const subscribers = await getSubscribers()
+    const normalizedEmail = email.toLowerCase().trim()
 
     // Verificar si ya existe
-    const existing = subscribers.find(s => s.email.toLowerCase() === email.toLowerCase())
-    if (existing) {
+    const existingQuery = `
+      SELECT * FROM newsletter_subscribers
+      WHERE email = $1
+    `
+    const existingResult = await query(existingQuery, [normalizedEmail])
+
+    if (existingResult.rows.length > 0) {
+      const existing = existingResult.rows[0]
+
+      // Si estaba cancelado, reactivar
       if (existing.status === 'unsubscribed') {
-        // Reactivar suscripción
-        existing.status = 'active'
-        existing.timestamp = new Date().toISOString()
-        await saveSubscribers(subscribers)
+        const reactivateQuery = `
+          UPDATE newsletter_subscribers
+          SET status = 'active',
+              signup_date = CURRENT_TIMESTAMP,
+              updated_at = CURRENT_TIMESTAMP
+          WHERE email = $1
+          RETURNING *
+        `
+        const reactivated = await query(reactivateQuery, [normalizedEmail])
 
         return NextResponse.json({
           success: true,
-          message: 'Suscripción reactivada',
-          subscriber: existing
+          message: '¡Suscripción reactivada!',
+          subscriber: reactivated.rows[0]
         })
       }
 
@@ -88,20 +75,21 @@ export async function POST(req: Request) {
       )
     }
 
-    // Crear nuevo suscriptor
-    const newSubscriber: Subscriber = {
-      id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      email: email.toLowerCase().trim(),
-      name: name?.trim(),
-      timestamp: new Date().toISOString(),
-      source: source || 'inline',
-      page: page,
-      status: 'active',
-      emailsSent: 0
-    }
+    // Insertar nuevo suscriptor
+    const insertQuery = `
+      INSERT INTO newsletter_subscribers
+        (email, name, source, signup_page, status, emails_sent)
+      VALUES ($1, $2, $3, $4, 'active', 0)
+      RETURNING *
+    `
+    const insertResult = await query(insertQuery, [
+      normalizedEmail,
+      name?.trim() || null,
+      source || 'inline',
+      page || null
+    ])
 
-    subscribers.push(newSubscriber)
-    await saveSubscribers(subscribers)
+    const newSubscriber = insertResult.rows[0]
 
     // Enviar email de bienvenida vía Brevo
     try {
@@ -111,7 +99,7 @@ export async function POST(req: Request) {
       // No fallar la suscripción si el email falla
     }
 
-    console.log(`📧 [Newsletter] Nueva suscripción: ${email} desde ${source}`)
+    console.log(`📧 [Newsletter] Nueva suscripción: ${normalizedEmail} desde ${source}`)
 
     return NextResponse.json({
       success: true,
@@ -130,46 +118,68 @@ export async function POST(req: Request) {
 // GET: Obtener estadísticas de suscriptores
 export async function GET() {
   try {
-    const subscribers = await getSubscribers()
+    // Total de suscriptores activos
+    const totalQuery = `
+      SELECT COUNT(*) as total
+      FROM newsletter_subscribers
+      WHERE status = 'active'
+    `
+    const totalResult = await query(totalQuery)
+
+    // Estadísticas por fuente
+    const bySourceQuery = `
+      SELECT source, COUNT(*) as count
+      FROM newsletter_subscribers
+      WHERE status = 'active'
+      GROUP BY source
+    `
+    const bySourceResult = await query(bySourceQuery)
+
+    // Nuevos suscriptores hoy
+    const todayQuery = `
+      SELECT COUNT(*) as count
+      FROM newsletter_subscribers
+      WHERE status = 'active'
+      AND DATE(signup_date) = CURRENT_DATE
+    `
+    const todayResult = await query(todayQuery)
+
+    // Nuevos suscriptores esta semana
+    const weekQuery = `
+      SELECT COUNT(*) as count
+      FROM newsletter_subscribers
+      WHERE status = 'active'
+      AND signup_date >= CURRENT_DATE - INTERVAL '7 days'
+    `
+    const weekResult = await query(weekQuery)
+
+    const bySource: Record<string, number> = {}
+    bySourceResult.rows.forEach(row => {
+      bySource[row.source] = parseInt(row.count)
+    })
 
     const stats = {
-      total: subscribers.length,
-      active: subscribers.filter(s => s.status === 'active').length,
-      unsubscribed: subscribers.filter(s => s.status === 'unsubscribed').length,
-      bySource: {
-        sidebar: subscribers.filter(s => s.source === 'sidebar').length,
-        inline: subscribers.filter(s => s.source === 'inline').length,
-        footer: subscribers.filter(s => s.source === 'footer').length,
-        popup: subscribers.filter(s => s.source === 'popup').length,
-        stickyBar: subscribers.filter(s => s.source === 'sticky-bar').length,
-      },
-      today: subscribers.filter(s => {
-        const subDate = new Date(s.timestamp)
-        const today = new Date()
-        return subDate.toDateString() === today.toDateString()
-      }).length,
-      thisWeek: subscribers.filter(s => {
-        const subDate = new Date(s.timestamp)
-        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-        return subDate >= weekAgo
-      }).length
+      total: parseInt(totalResult.rows[0].total),
+      bySource,
+      today: parseInt(todayResult.rows[0].count),
+      thisWeek: parseInt(weekResult.rows[0].count)
     }
 
     return NextResponse.json({
-      subscribers: subscribers.filter(s => s.status === 'active'),
+      success: true,
       stats
     })
   } catch (error: any) {
     console.error('Error al obtener suscriptores:', error)
     return NextResponse.json(
-      { error: 'Error al obtener suscriptores', details: error.message },
+      { error: 'Error al obtener estadísticas', details: error.message },
       { status: 500 }
     )
   }
 }
 
 // Función para enviar email de bienvenida vía Brevo
-async function sendWelcomeEmail(subscriber: Subscriber) {
+async function sendWelcomeEmail(subscriber: any) {
   const brevoApiKey = process.env.BREVO_API_KEY
 
   if (!brevoApiKey) {
