@@ -1,21 +1,16 @@
 import { NextResponse } from 'next/server'
-import { readFile, writeFile } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
-
-const DATA_DIR = path.join(process.cwd(), 'data')
-const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'newsletter-subscribers.json')
+import { query } from '@/app/lib/db'
 
 interface Subscriber {
-  id: string
+  id: number
   email: string
   name?: string
-  timestamp: string
+  signup_date: string
   source: string
-  page: string
+  signup_page?: string
   status: 'active' | 'unsubscribed'
-  emailsSent: number
-  unsubscribedAt?: string
+  emails_sent: number
+  unsubscribed_at?: string
 }
 
 // POST: Cancelar suscripción
@@ -30,28 +25,21 @@ export async function POST(req: Request) {
       )
     }
 
-    // Leer suscriptores
-    if (!existsSync(SUBSCRIBERS_FILE)) {
-      return NextResponse.json(
-        { error: 'No se encontraron suscriptores' },
-        { status: 404 }
-      )
-    }
-
-    const data = await readFile(SUBSCRIBERS_FILE, 'utf-8')
-    const subscribers: Subscriber[] = JSON.parse(data)
-
     // Buscar suscriptor
-    const subscriberIndex = subscribers.findIndex(s => s.id === id)
+    const selectQuery = `
+      SELECT * FROM newsletter_subscribers
+      WHERE id = $1
+    `
+    const selectResult = await query(selectQuery, [parseInt(id)])
 
-    if (subscriberIndex === -1) {
+    if (selectResult.rows.length === 0) {
       return NextResponse.json(
         { error: 'Suscriptor no encontrado' },
         { status: 404 }
       )
     }
 
-    const subscriber = subscribers[subscriberIndex]
+    const subscriber = selectResult.rows[0]
 
     // Si ya está dado de baja
     if (subscriber.status === 'unsubscribed') {
@@ -60,29 +48,32 @@ export async function POST(req: Request) {
         message: 'Ya te habías dado de baja anteriormente',
         subscriber: {
           email: subscriber.email,
-          unsubscribedAt: subscriber.unsubscribedAt
+          unsubscribedAt: subscriber.unsubscribed_at
         }
       })
     }
 
-    // Actualizar estado
-    subscribers[subscriberIndex] = {
-      ...subscriber,
-      status: 'unsubscribed',
-      unsubscribedAt: new Date().toISOString()
-    }
+    // Actualizar estado a unsubscribed
+    const updateQuery = `
+      UPDATE newsletter_subscribers
+      SET
+        status = 'unsubscribed',
+        unsubscribed_at = CURRENT_TIMESTAMP,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+      RETURNING *
+    `
+    const updateResult = await query(updateQuery, [parseInt(id)])
+    const updatedSubscriber = updateResult.rows[0]
 
-    // Guardar cambios
-    await writeFile(SUBSCRIBERS_FILE, JSON.stringify(subscribers, null, 2))
-
-    console.log(`🚫 [Newsletter] Usuario dado de baja: ${subscriber.email}`)
+    console.log(`🚫 [Newsletter] Usuario dado de baja: ${updatedSubscriber.email}`)
 
     return NextResponse.json({
       success: true,
       message: 'Te has dado de baja exitosamente del newsletter',
       subscriber: {
-        email: subscriber.email,
-        unsubscribedAt: subscribers[subscriberIndex].unsubscribedAt
+        email: updatedSubscriber.email,
+        unsubscribedAt: updatedSubscriber.unsubscribed_at
       }
     })
   } catch (error: any) {
@@ -107,24 +98,29 @@ export async function GET(req: Request) {
       )
     }
 
-    if (!existsSync(SUBSCRIBERS_FILE)) {
-      return NextResponse.json(
-        { error: 'No se encontraron suscriptores' },
-        { status: 404 }
-      )
-    }
+    // Buscar suscriptor por ID
+    const selectQuery = `
+      SELECT
+        id,
+        email,
+        name,
+        status,
+        signup_date,
+        emails_sent,
+        unsubscribed_at
+      FROM newsletter_subscribers
+      WHERE id = $1
+    `
+    const result = await query(selectQuery, [parseInt(id)])
 
-    const data = await readFile(SUBSCRIBERS_FILE, 'utf-8')
-    const subscribers: Subscriber[] = JSON.parse(data)
-
-    const subscriber = subscribers.find(s => s.id === id)
-
-    if (!subscriber) {
+    if (result.rows.length === 0) {
       return NextResponse.json(
         { error: 'Suscriptor no encontrado' },
         { status: 404 }
       )
     }
+
+    const subscriber = result.rows[0]
 
     return NextResponse.json({
       success: true,
@@ -132,9 +128,9 @@ export async function GET(req: Request) {
         id: subscriber.id,
         email: subscriber.email,
         status: subscriber.status,
-        subscribedAt: subscriber.timestamp,
-        emailsSent: subscriber.emailsSent,
-        unsubscribedAt: subscriber.unsubscribedAt
+        subscribedAt: subscriber.signup_date,
+        emailsSent: subscriber.emails_sent,
+        unsubscribedAt: subscriber.unsubscribed_at
       }
     })
   } catch (error: any) {
