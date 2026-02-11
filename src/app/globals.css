@@ -27,6 +27,36 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+@layer components {
+  /* Mejores estilos para inputs */
+  .input-field {
+    @apply w-full px-4 py-2.5 border-2 border-gray-400 rounded-lg
+           bg-white text-gray-900 font-medium
+           placeholder:text-gray-500
+           focus:border-amber-500 focus:ring-4 focus:ring-amber-100 focus:outline-none
+           transition-all duration-200
+           hover:border-amber-400;
+  }
+
+  .select-field {
+    @apply w-full px-4 py-2.5 border-2 border-gray-400 rounded-lg
+           bg-white text-gray-900 font-medium
+           focus:border-amber-500 focus:ring-4 focus:ring-amber-100 focus:outline-none
+           transition-all duration-200
+           hover:border-amber-400
+           cursor-pointer appearance-none;
+  }
+
+  .input-search {
+    @apply w-full px-4 py-2.5 pl-10 border-2 border-gray-400 rounded-lg
+           bg-white text-gray-900
+           placeholder:text-gray-500
+           focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none
+           transition-all duration-200
+           hover:border-blue-400;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

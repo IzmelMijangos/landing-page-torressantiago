@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { serviciosData, Service } from "@/app/lib/services";
-import ChatbotWidget from "@/app/components/ChatbotWidget";
-import StickyBar from "@/app/components/lead-capture/StickyBar";
+import SessionProvider from "@/components/SessionProvider";
+import ConditionalWidgets from "@/components/ConditionalWidgets";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -141,16 +141,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </noscript>
         {/* End Google Tag Manager (noscript) */}
 
-        {children}
-        <ChatbotWidget />
-        <StickyBar
-          message="📬 Recibe tips de tecnología cada semana"
-          ctaText="Suscríbete gratis"
-          showAfterScroll={400}
-          variant="top"
-          closable={true}
-        />
+        <SessionProvider>
+          {children}
+          <ConditionalWidgets />
+        </SessionProvider>
       </body>
+
     </html>
   );
 }
