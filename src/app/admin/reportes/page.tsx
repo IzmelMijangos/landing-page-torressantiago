@@ -20,11 +20,21 @@ interface ReportMetrics {
   leadsThisMonth: number;
   leadsLastMonth: number;
   conversionRate: string;
-  topPalenques: Array<{
+  topPalenques?: Array<{
     id: number;
     nombre: string;
     total_leads: number;
     convertidos: number;
+  }>;
+  recentPalenques?: Array<{
+    id: number;
+    nombre: string;
+    telefono_contacto: string;
+    email_contacto: string;
+    plan: string;
+    fecha_registro: string;
+    activo: boolean;
+    total_leads?: number;
   }>;
 }
 
