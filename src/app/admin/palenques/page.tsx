@@ -51,7 +51,7 @@ export default function PalenquesPage() {
       if (!response.ok) throw new Error('Error al cargar palenques');
 
       const data = await response.json();
-      setPalenques(data);
+      setPalenques(data.palenques || []);
     } catch (error) {
       console.error('Error:', error);
     } finally {

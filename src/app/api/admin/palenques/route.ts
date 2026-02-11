@@ -79,7 +79,10 @@ export async function GET(request: Request) {
 
     const result = await queryMezcal(query, params);
 
-    return NextResponse.json(result.rows);
+    return NextResponse.json({
+      palenques: result.rows,
+      total: result.rows.length
+    });
   } catch (error) {
     console.error('Error fetching palenques:', error);
     return NextResponse.json(

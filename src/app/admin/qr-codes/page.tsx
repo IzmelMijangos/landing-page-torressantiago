@@ -113,15 +113,24 @@ export default function QRCodesPage() {
       </div>
 
       {/* Instrucciones */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-        <h3 className="font-semibold text-blue-900 mb-2">📋 Instrucciones:</h3>
-        <ol className="text-sm text-blue-800 space-y-1 ml-4 list-decimal">
-          <li>Click en "Generar QR" para crear el código del palenque</li>
-          <li>Descarga la imagen en alta calidad (512x512px)</li>
-          <li>Imprime el QR y colócalo en un lugar visible del palenque</li>
-          <li>Los clientes escanean el código y llenan el formulario</li>
-          <li>Los leads aparecen automáticamente en el dashboard</li>
-        </ol>
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 mb-8 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0">
+            <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+              <span className="text-white text-xl">📋</span>
+            </div>
+          </div>
+          <div className="flex-1">
+            <h3 className="font-bold text-amber-900 text-lg mb-3">¿Cómo funciona?</h3>
+            <ol className="text-sm text-amber-900 space-y-2 ml-4 list-decimal">
+              <li className="pl-2">Click en <strong>"Generar QR"</strong> para crear el código único del palenque</li>
+              <li className="pl-2">Descarga la imagen en alta calidad (512x512px) lista para imprimir</li>
+              <li className="pl-2">Imprime el QR code y colócalo en un lugar visible (barra, mesa, entrada)</li>
+              <li className="pl-2">Los clientes escanean el código con su celular y llenan el formulario</li>
+              <li className="pl-2">Los leads aparecen <strong>automáticamente</strong> en tu dashboard en tiempo real</li>
+            </ol>
+          </div>
+        </div>
       </div>
 
       {/* Lista de Palenques */}
@@ -132,7 +141,7 @@ export default function QRCodesPage() {
           return (
             <div
               key={palenque.id}
-              className="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6 border border-gray-200"
+              className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-200 p-6 border-2 border-gray-100 hover:border-amber-200"
             >
               {/* Header del Card */}
               <div className="flex items-start justify-between mb-4">
@@ -155,11 +164,11 @@ export default function QRCodesPage() {
               {/* QR Code Display */}
               {qrData && qrData.qrCode && !qrData.loading ? (
                 <div className="mb-4">
-                  <div className="bg-white border-2 border-gray-200 rounded-lg p-4 flex items-center justify-center">
+                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-6 flex items-center justify-center shadow-inner">
                     <img
                       src={qrData.qrCode}
                       alt={`QR Code - ${palenque.nombre}`}
-                      className="w-48 h-48"
+                      className="w-48 h-48 rounded-lg shadow-md"
                     />
                   </div>
 
@@ -185,8 +194,11 @@ export default function QRCodesPage() {
                   </div>
                 </div>
               ) : (
-                <div className="mb-4 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 flex items-center justify-center">
-                  <QrCodeIcon className="h-24 w-24 text-gray-300" />
+                <div className="mb-4 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center">
+                  <QrCodeIcon className="h-20 w-20 text-gray-400 mb-3" />
+                  <p className="text-sm text-gray-500 text-center">
+                    QR no generado aún
+                  </p>
                 </div>
               )}
 
@@ -196,7 +208,7 @@ export default function QRCodesPage() {
                   <button
                     onClick={() => generateQRCode(palenque.id)}
                     disabled={qrData?.loading || !palenque.activo}
-                    className="w-full btn-primary flex items-center justify-center gap-2"
+                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                   >
                     {qrData?.loading ? (
                       <>
@@ -232,16 +244,16 @@ export default function QRCodesPage() {
                   <>
                     <button
                       onClick={() => downloadQRCode(palenque, qrData.qrCode)}
-                      className="w-full btn-primary flex items-center justify-center gap-2"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
                     >
                       <ArrowDownTrayIcon className="h-5 w-5" />
                       Descargar QR (512x512)
                     </button>
                     <button
                       onClick={() => generateQRCode(palenque.id)}
-                      className="w-full text-sm text-gray-600 hover:text-gray-900 underline"
+                      className="w-full text-sm text-amber-700 hover:text-amber-900 font-medium py-2 hover:bg-amber-50 rounded transition-colors"
                     >
-                      Regenerar
+                      🔄 Regenerar QR
                     </button>
                   </>
                 )}
@@ -266,7 +278,10 @@ export default function QRCodesPage() {
           <p className="text-gray-600 mb-6">
             Crea un palenque para generar códigos QR
           </p>
-          <a href="/admin/palenques/nuevo" className="btn-primary inline-block">
+          <a
+            href="/admin/palenques/nuevo"
+            className="inline-block bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-sm hover:shadow-md"
+          >
             Crear Palenque
           </a>
         </div>
