@@ -13,8 +13,11 @@ import StickyBar from '@/app/components/lead-capture/StickyBar';
 export default function ConditionalWidgets() {
   const pathname = usePathname();
 
-  // Don't show widgets on admin or dashboard routes
-  const hideWidgets = pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard');
+  // Don't show widgets on admin, dashboard or lead-capture routes
+  const hideWidgets =
+    pathname?.startsWith('/admin') ||
+    pathname?.startsWith('/dashboard') ||
+    pathname?.startsWith('/lead-capture');
 
   if (hideWidgets) {
     return null;
