@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
             email: string;
             password_hash: string;
             nombre_completo: string;
-            role: string;
+            role: 'superadmin' | 'admin' | 'palenque';
             palenque_id: number | null;
             activo: boolean;
           }>(
@@ -66,9 +66,9 @@ export const authOptions: NextAuthOptions = {
             id: user.id.toString(),
             email: user.email,
             name: user.nombre_completo,
-            role: user.role,
+            role: user.role as 'superadmin' | 'admin' | 'palenque',
             palenqueId: user.palenque_id,
-          };
+          } as any;
         } catch (error) {
           console.error('Error en autenticación:', error);
           throw new Error('Error al autenticar');
