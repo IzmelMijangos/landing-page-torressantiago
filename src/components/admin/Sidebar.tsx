@@ -18,11 +18,13 @@ import {
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
   XMarkIcon,
+  QrCodeIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon },
   { name: 'Palenques', href: '/admin/palenques', icon: BuildingStorefrontIcon },
+  { name: 'Códigos QR', href: '/admin/qr-codes', icon: QrCodeIcon },
   { name: 'Reportes', href: '/admin/reportes', icon: ChartBarIcon },
   { name: 'Configuración', href: '/admin/configuracion', icon: Cog6ToothIcon },
 ];
