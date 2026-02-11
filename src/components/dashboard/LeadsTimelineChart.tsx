@@ -11,7 +11,7 @@ interface LeadsTimelineChartProps {
   data: Array<{
     fecha: string;
     count: number;
-    convertidos: number;
+    convertidos?: number;
   }>;
 }
 
@@ -20,7 +20,7 @@ export default function LeadsTimelineChart({ data }: LeadsTimelineChartProps) {
   const chartData = data.map((item) => ({
     fecha: new Date(item.fecha).toLocaleDateString('es-MX', { month: 'short', day: 'numeric' }),
     'Total Leads': item.count,
-    'Convertidos': item.convertidos,
+    'Convertidos': item.convertidos || 0,
   }));
 
   return (
