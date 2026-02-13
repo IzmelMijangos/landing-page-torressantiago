@@ -18,17 +18,22 @@
       "parameters": {
         "url": "https://leads.torressantiago.com/api/chatbot/webhook",
         "authentication": "none",
-        "requestMethod": "POST",
+        "method": "POST",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": []
+        },
         "jsonParameters": true,
         "options": {
           "timeout": 30000
         },
-        "bodyParametersJson": "={{ JSON.stringify({\n  \"From\": $json.From,\n  \"To\": $json.To,\n  \"Body\": $json.Body,\n  \"MessageSid\": $json.MessageSid,\n  \"MediaUrl\": $json.MediaUrl0,\n  \"MediaContentType\": $json.MediaContentType0,\n  \"NumMedia\": $json.NumMedia\n}) }}"
+        "bodyParametersJson": "={\n  \"From\": \"{{ $json.From }}\",\n  \"To\": \"{{ $json.To }}\",\n  \"Body\": \"{{ $json.Body }}\",\n  \"MessageSid\": \"{{ $json.MessageSid }}\",\n  \"MediaUrl\": \"{{ $json.MediaUrl0 }}\",\n  \"MediaContentType\": \"{{ $json.MediaContentType0 }}\",\n  \"NumMedia\": \"{{ $json.NumMedia }}\"\n}"
       },
       "id": "http-chatbot-webhook",
       "name": "Enviar a Chatbot",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
+      "typeVersion": 4.1,
       "position": [450, 300]
     },
     {
@@ -45,19 +50,29 @@
     {
       "parameters": {
         "conditions": {
-          "string": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
             {
-              "value1": "={{ $json.mode }}",
-              "operation": "equals",
-              "value2": "activo"
+              "id": "mode-check",
+              "leftValue": "={{ $json.mode }}",
+              "rightValue": "activo",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
-          ]
+          ],
+          "combinator": "and"
         }
       },
       "id": "check-mode",
       "name": "¿Modo Activo?",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
+      "typeVersion": 2,
       "position": [450, 500]
     },
     {

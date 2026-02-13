@@ -24,9 +24,13 @@ interface WebhookPayload {
 export async function POST(request: Request) {
   try {
     const payload: WebhookPayload = await request.json();
+
+    // Debug: Log complete payload
+    console.log('📦 Complete payload received:', JSON.stringify(payload, null, 2));
+
     const { From, Body, MessageSid, MediaUrl, palenque_id } = payload;
 
-    console.log('📩 Webhook received:', { From, Body: Body.substring(0, 50), palenque_id });
+    console.log('📩 Webhook received:', { From, Body: Body?.substring(0, 50) || Body, palenque_id });
 
     // Extract phone number
     const phoneNumber = From.replace('whatsapp:', '');
