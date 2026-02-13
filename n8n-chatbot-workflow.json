@@ -1,0 +1,173 @@
+{
+  "name": "WhatsApp Chatbot - Torres Santiago",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "twilio-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-twilio",
+      "name": "Webhook Twilio",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "twilio-whatsapp-webhook"
+    },
+    {
+      "parameters": {
+        "url": "https://leads.torressantiago.com/api/chatbot/webhook",
+        "authentication": "none",
+        "requestMethod": "POST",
+        "jsonParameters": true,
+        "options": {
+          "timeout": 30000
+        },
+        "bodyParametersJson": "={{ JSON.stringify({\n  \"From\": $json.From,\n  \"To\": $json.To,\n  \"Body\": $json.Body,\n  \"MessageSid\": $json.MessageSid,\n  \"MediaUrl\": $json.MediaUrl0,\n  \"MediaContentType\": $json.MediaContentType0,\n  \"NumMedia\": $json.NumMedia\n}) }}"
+      },
+      "id": "http-chatbot-webhook",
+      "name": "Enviar a Chatbot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  \"success\": true,\n  \"processed\": true,\n  \"conversacion_id\": $json.conversacion_id || null,\n  \"intent\": $json.intent || \"desconocido\",\n  \"timestamp\": new Date().toISOString()\n}) }}"
+      },
+      "id": "respond-webhook",
+      "name": "Responder a Twilio",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.mode }}",
+              "operation": "equals",
+              "value2": "activo"
+            }
+          ]
+        }
+      },
+      "id": "check-mode",
+      "name": "¿Modo Activo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 500]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "log_message",
+              "value": "Mensaje procesado en modo activo - Bot respondió automáticamente"
+            },
+            {
+              "name": "conversacion_id",
+              "value": "={{ $json.conversacion_id }}"
+            },
+            {
+              "name": "intent",
+              "value": "={{ $json.intent }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "log-activo",
+      "name": "Log Modo Activo",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [650, 450]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "log_message",
+              "value": "Mensaje procesado en modo pasivo - Notificar al dueño"
+            },
+            {
+              "name": "conversacion_id",
+              "value": "={{ $json.conversacion_id }}"
+            },
+            {
+              "name": "intent",
+              "value": "={{ $json.intent }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "log-pasivo",
+      "name": "Log Modo Pasivo",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [650, 550]
+    }
+  ],
+  "connections": {
+    "Webhook Twilio": {
+      "main": [
+        [
+          {
+            "node": "Enviar a Chatbot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar a Chatbot": {
+      "main": [
+        [
+          {
+            "node": "Responder a Twilio",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "¿Modo Activo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Modo Activo?": {
+      "main": [
+        [
+          {
+            "node": "Log Modo Activo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Modo Pasivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "chatbot-v1",
+  "id": "chatbot-whatsapp-workflow",
+  "meta": {
+    "instanceId": "torres-santiago-mezcal"
+  },
+  "tags": []
+}
