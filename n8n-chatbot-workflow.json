@@ -28,7 +28,7 @@
         "options": {
           "timeout": 30000
         },
-        "bodyParametersJson": "={\n  \"From\": \"{{ $json.From }}\",\n  \"To\": \"{{ $json.To }}\",\n  \"Body\": \"{{ $json.Body }}\",\n  \"MessageSid\": \"{{ $json.MessageSid }}\",\n  \"MediaUrl\": \"{{ $json.MediaUrl0 }}\",\n  \"MediaContentType\": \"{{ $json.MediaContentType0 }}\",\n  \"NumMedia\": \"{{ $json.NumMedia }}\"\n}"
+        "bodyParametersJson": "={{ {\n  \"From\": $json.From,\n  \"To\": $json.To,\n  \"Body\": $json.Body,\n  \"MessageSid\": $json.MessageSid,\n  \"MediaUrl\": $json.MediaUrl0,\n  \"MediaContentType\": $json.MediaContentType0,\n  \"NumMedia\": $json.NumMedia\n} }}"
       },
       "id": "http-chatbot-webhook",
       "name": "Enviar a Chatbot",

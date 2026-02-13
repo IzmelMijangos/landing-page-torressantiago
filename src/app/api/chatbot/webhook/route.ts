@@ -32,15 +32,17 @@ export async function POST(request: Request) {
 
     console.log('📩 Webhook received:', { From, Body: Body?.substring(0, 50) || Body, palenque_id });
 
-    // Extract phone number
-    const phoneNumber = From.replace('whatsapp:', '');
-
-    if (!phoneNumber || !Body) {
+    // Validate required fields first
+    if (!From || !Body) {
+      console.error('❌ Missing required fields:', { From, Body });
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields', details: { From: !!From, Body: !!Body } },
         { status: 400 }
       );
     }
+
+    // Extract phone number
+    const phoneNumber = From.replace('whatsapp:', '');
 
     // Step 1: Identify palenque
     let palenqueId = palenque_id;
