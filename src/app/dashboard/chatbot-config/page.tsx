@@ -111,7 +111,7 @@ export default function ChatbotConfigPage() {
   };
 
   const handleDiaToggle = (dia: number) => {
-    if (!config) return;
+    if (!config || !config.horario_activo) return;
 
     const dias = config.horario_activo.dias.includes(dia)
       ? config.horario_activo.dias.filter((d) => d !== dia)
@@ -127,7 +127,7 @@ export default function ChatbotConfigPage() {
   };
 
   const handleMetodoPagoToggle = (metodo: string) => {
-    if (!config) return;
+    if (!config || !config.metodos_pago) return;
 
     const metodos = config.metodos_pago.includes(metodo)
       ? config.metodos_pago.filter((m) => m !== metodo)
@@ -304,9 +304,9 @@ export default function ChatbotConfigPage() {
                 </label>
                 <input
                   type="time"
-                  value={config.horario_activo.inicio}
+                  value={config?.horario_activo?.inicio || '09:00'}
                   onChange={(e) =>
-                    setConfig({
+                    config && setConfig({
                       ...config,
                       horario_activo: {
                         ...config.horario_activo,
@@ -322,9 +322,9 @@ export default function ChatbotConfigPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Hora de Fin</label>
                 <input
                   type="time"
-                  value={config.horario_activo.fin}
+                  value={config?.horario_activo?.fin || '20:00'}
                   onChange={(e) =>
-                    setConfig({
+                    config && setConfig({
                       ...config,
                       horario_activo: {
                         ...config.horario_activo,
@@ -348,7 +348,7 @@ export default function ChatbotConfigPage() {
                     key={dia.value}
                     onClick={() => handleDiaToggle(dia.value)}
                     className={`px-4 py-2 rounded-lg font-medium transition ${
-                      config.horario_activo.dias.includes(dia.value)
+                      config?.horario_activo?.dias?.includes(dia.value)
                         ? 'bg-amber-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
@@ -374,8 +374,8 @@ export default function ChatbotConfigPage() {
                 Mensaje de Bienvenida
               </label>
               <textarea
-                value={config.mensaje_bienvenida}
-                onChange={(e) => setConfig({ ...config, mensaje_bienvenida: e.target.value })}
+                value={config?.mensaje_bienvenida || ''}
+                onChange={(e) => config && setConfig({ ...config, mensaje_bienvenida: e.target.value })}
                 rows={3}
                 className="input-field"
                 placeholder="Hola! Gracias por contactarnos..."
@@ -390,8 +390,8 @@ export default function ChatbotConfigPage() {
                 Mensaje Fuera de Horario
               </label>
               <textarea
-                value={config.mensaje_fuera_horario}
-                onChange={(e) => setConfig({ ...config, mensaje_fuera_horario: e.target.value })}
+                value={config?.mensaje_fuera_horario || ''}
+                onChange={(e) => config && setConfig({ ...config, mensaje_fuera_horario: e.target.value })}
                 rows={3}
                 className="input-field"
                 placeholder="Gracias por tu mensaje. Nuestro horario es..."
@@ -407,8 +407,8 @@ export default function ChatbotConfigPage() {
               </label>
               <input
                 type="text"
-                value={config.personalidad}
-                onChange={(e) => setConfig({ ...config, personalidad: e.target.value })}
+                value={config?.personalidad || ''}
+                onChange={(e) => config && setConfig({ ...config, personalidad: e.target.value })}
                 className="input-field"
                 placeholder="amigable y conocedor"
               />
@@ -420,7 +420,7 @@ export default function ChatbotConfigPage() {
         </div>
 
         {/* Configuración de Ventas (Solo Modo Activo) */}
-        {config.modo === 'activo' && (
+        {config?.modo === 'activo' && (
           <>
             {/* Métodos de Pago */}
             <div className="bg-white rounded-lg shadow p-6">
@@ -437,7 +437,7 @@ export default function ChatbotConfigPage() {
                   >
                     <input
                       type="checkbox"
-                      checked={config.metodos_pago.includes(metodo.value)}
+                      checked={config?.metodos_pago?.includes(metodo.value) || false}
                       onChange={() => handleMetodoPagoToggle(metodo.value)}
                       className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
                     />
@@ -462,9 +462,9 @@ export default function ChatbotConfigPage() {
                     </label>
                     <input
                       type="number"
-                      value={config.costos_envio.local}
+                      value={config?.costos_envio?.local || 0}
                       onChange={(e) =>
-                        setConfig({
+                        config && setConfig({
                           ...config,
                           costos_envio: {
                             ...config.costos_envio,
@@ -484,9 +484,9 @@ export default function ChatbotConfigPage() {
                     </label>
                     <input
                       type="number"
-                      value={config.costos_envio.nacional}
+                      value={config?.costos_envio?.nacional || 0}
                       onChange={(e) =>
-                        setConfig({
+                        config && setConfig({
                           ...config,
                           costos_envio: {
                             ...config.costos_envio,
@@ -506,9 +506,9 @@ export default function ChatbotConfigPage() {
                     </label>
                     <input
                       type="number"
-                      value={config.costos_envio.internacional}
+                      value={config?.costos_envio?.internacional || 0}
                       onChange={(e) =>
-                        setConfig({
+                        config && setConfig({
                           ...config,
                           costos_envio: {
                             ...config.costos_envio,
@@ -529,9 +529,9 @@ export default function ChatbotConfigPage() {
                   </label>
                   <input
                     type="number"
-                    value={config.zona_envio_gratis_min}
+                    value={config?.zona_envio_gratis_min || 0}
                     onChange={(e) =>
-                      setConfig({
+                      config && setConfig({
                         ...config,
                         zona_envio_gratis_min: parseFloat(e.target.value) || 0,
                       })
@@ -567,14 +567,14 @@ export default function ChatbotConfigPage() {
                   min="0"
                   max="1"
                   step="0.1"
-                  value={Number(config.temperatura_ia)}
+                  value={Number(config?.temperatura_ia || 0.7)}
                   onChange={(e) =>
-                    setConfig({ ...config, temperatura_ia: parseFloat(e.target.value) })
+                    config && setConfig({ ...config, temperatura_ia: parseFloat(e.target.value) })
                   }
                   className="flex-1"
                 />
                 <span className="text-sm font-medium text-gray-900 w-12">
-                  {Number(config.temperatura_ia).toFixed(1)}
+                  {Number(config?.temperatura_ia || 0.7).toFixed(1)}
                 </span>
               </div>
               <p className="mt-1 text-xs text-gray-500">

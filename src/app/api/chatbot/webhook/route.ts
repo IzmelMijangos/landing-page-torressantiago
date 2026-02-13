@@ -105,7 +105,10 @@ export async function POST(request: Request) {
         id: number;
         modo: 'pasivo' | 'activo';
         activo: boolean;
+        horario_activo: any;
         mensaje_bienvenida: string;
+        mensaje_fuera_horario: string;
+        tiempo_espera_respuesta: number;
         personalidad: string;
         temperatura_ia: number;
       }>(
