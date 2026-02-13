@@ -9,6 +9,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { queryMezcal } from '@/lib/db-mezcal';
 import bcrypt from 'bcryptjs';
+import { generateTemporaryPassword } from '@/lib/password-utils';
+import axios from 'axios';
 
 export async function GET(request: Request) {
   try {
@@ -113,8 +115,8 @@ export async function POST(request: Request) {
       whatsapp_phone_number,
       plan,
       // User creation
+      crear_usuario, // Boolean: true/false
       usuario_email,
-      usuario_password,
       usuario_nombre,
     } = body;
 
@@ -172,9 +174,11 @@ export async function POST(request: Request) {
 
     const newPalenque = palenqueResult.rows[0];
 
-    // Create user if credentials provided
+    // Create user if requested
     let newUser = null;
-    if (usuario_email && usuario_password) {
+    let temporaryPassword = null;
+
+    if (crear_usuario && usuario_email) {
       // Check if user email already exists
       const existingUser = await queryMezcal(
         'SELECT id FROM usuarios WHERE email = $1',
@@ -190,10 +194,13 @@ export async function POST(request: Request) {
         });
       }
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(usuario_password, 10);
+      // Generate temporary password
+      temporaryPassword = generateTemporaryPassword();
 
-      // Create user
+      // Hash password
+      const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+
+      // Create user with metadata flag for password change
       const userResult = await queryMezcal(
         `INSERT INTO usuarios (
           email,
@@ -201,19 +208,116 @@ export async function POST(request: Request) {
           nombre_completo,
           role,
           palenque_id,
-          activo
-        ) VALUES ($1, $2, $3, 'palenque', $4, TRUE)
+          activo,
+          email_verificado,
+          metadata
+        ) VALUES ($1, $2, $3, 'palenque', $4, TRUE, FALSE, $5)
         RETURNING id, email, nombre_completo, role`,
-        [usuario_email, hashedPassword, usuario_nombre || nombre, newPalenque.id]
+        [
+          usuario_email,
+          hashedPassword,
+          usuario_nombre || nombre,
+          newPalenque.id,
+          JSON.stringify({ requiere_cambio_password: true })
+        ]
       );
 
       newUser = userResult.rows[0];
+
+      // Send welcome email with temporary password
+      try {
+        await axios.post(
+          'https://api.brevo.com/v3/smtp/email',
+          {
+            sender: {
+              name: 'Torres Santiago - Sistema de Leads',
+              email: 'contacto.torressantiago@gmail.com'
+            },
+            to: [
+              {
+                email: usuario_email,
+                name: usuario_nombre || nombre
+              }
+            ],
+            subject: `Bienvenido a Torres Santiago - Acceso al Dashboard de ${nombre}`,
+            htmlContent: `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="UTF-8">
+              </head>
+              <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                  <h1 style="color: white; margin: 0; font-size: 28px;">🥃 Bienvenido a Torres Santiago</h1>
+                </div>
+
+                <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb;">
+                  <p style="font-size: 16px; margin-bottom: 20px;">Hola <strong>${usuario_nombre || nombre}</strong>,</p>
+
+                  <p style="margin-bottom: 20px;">
+                    Se ha creado tu cuenta para acceder al dashboard de <strong>${nombre}</strong> en nuestro sistema de gestión de leads.
+                  </p>
+
+                  <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #d97706; margin: 25px 0;">
+                    <h3 style="margin-top: 0; color: #d97706;">📋 Datos de Acceso</h3>
+                    <p style="margin: 10px 0;"><strong>Email:</strong> ${usuario_email}</p>
+                    <p style="margin: 10px 0;"><strong>Contraseña Temporal:</strong> <code style="background: #fef3c7; padding: 5px 10px; border-radius: 4px; font-size: 16px; font-weight: bold;">${temporaryPassword}</code></p>
+                    <p style="margin: 10px 0;"><strong>URL de Acceso:</strong> <a href="${process.env.NEXTAUTH_URL || 'https://leads.torressantiago.com'}/login" style="color: #d97706;">Ir al Dashboard</a></p>
+                  </div>
+
+                  <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                    <p style="margin: 0; font-size: 14px;">
+                      <strong>⚠️ Importante:</strong> Por tu seguridad, deberás cambiar esta contraseña temporal en tu primer inicio de sesión.
+                    </p>
+                  </div>
+
+                  <h3 style="color: #374151; margin-top: 30px;">Próximos Pasos:</h3>
+                  <ol style="padding-left: 20px;">
+                    <li style="margin-bottom: 10px;">Ingresa a <a href="${process.env.NEXTAUTH_URL || 'https://leads.torressantiago.com'}/login" style="color: #d97706;">leads.torressantiago.com</a></li>
+                    <li style="margin-bottom: 10px;">Inicia sesión con tu email y contraseña temporal</li>
+                    <li style="margin-bottom: 10px;">Crea tu nueva contraseña segura</li>
+                    <li style="margin-bottom: 10px;">Comienza a gestionar tus leads</li>
+                  </ol>
+
+                  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                    <p style="font-size: 14px; color: #6b7280; margin: 5px 0;">
+                      Si tienes alguna duda, contáctanos:
+                    </p>
+                    <p style="font-size: 14px; color: #6b7280; margin: 5px 0;">
+                      📧 contacto.torressantiago@gmail.com
+                    </p>
+                  </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px; color: #9ca3af; font-size: 12px;">
+                  <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+                  <p>© ${new Date().getFullYear()} Torres Santiago. Todos los derechos reservados.</p>
+                </div>
+              </body>
+              </html>
+            `,
+          },
+          {
+            headers: {
+              'accept': 'application/json',
+              'api-key': process.env.BREVO_API_KEY || '',
+              'content-type': 'application/json'
+            }
+          }
+        );
+
+        console.log('Welcome email sent successfully to:', usuario_email);
+      } catch (emailError) {
+        console.error('Error sending welcome email:', emailError);
+        // Don't fail the request if email fails
+      }
     }
 
     return NextResponse.json({
       ...newPalenque,
       user_created: !!newUser,
       user: newUser,
+      email_sent: !!temporaryPassword,
     }, { status: 201 });
 
   } catch (error) {

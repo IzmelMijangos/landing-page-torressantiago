@@ -24,7 +24,6 @@ export default function NuevoPalenquePage() {
     whatsapp_phone_number: '',
     plan: 'basico',
     usuario_email: '',
-    usuario_password: '',
     usuario_nombre: '',
   });
 
@@ -53,14 +52,14 @@ export default function NuevoPalenquePage() {
 
       // Add user data if checkbox is checked
       if (createUser) {
-        if (!formData.usuario_email || !formData.usuario_password) {
-          setError('Email y contraseña de usuario son requeridos');
+        if (!formData.usuario_email) {
+          setError('Email de usuario es requerido');
           setLoading(false);
           return;
         }
 
+        data.crear_usuario = true;
         data.usuario_email = formData.usuario_email;
-        data.usuario_password = formData.usuario_password;
         data.usuario_nombre = formData.usuario_nombre || formData.nombre;
       }
 
@@ -228,6 +227,24 @@ export default function NuevoPalenquePage() {
             {createUser && (
               <>
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Credenciales de Usuario</h2>
+
+                {/* Info Alert */}
+                <div className="mb-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-blue-700">
+                        <strong>El sistema generará automáticamente una contraseña temporal</strong> y la enviará por email al usuario.
+                        El usuario deberá cambiar esta contraseña en su primer inicio de sesión.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Email Usuario */}
                   <div>
@@ -244,29 +261,12 @@ export default function NuevoPalenquePage() {
                       placeholder="usuario@palenque.com"
                     />
                     <p className="mt-1 text-xs text-gray-500">
-                      Este será el email para iniciar sesión
+                      Este será el email para iniciar sesión y recibirá la contraseña temporal
                     </p>
                   </div>
 
-                  {/* Contraseña */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Contraseña <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="password"
-                      name="usuario_password"
-                      required={createUser}
-                      value={formData.usuario_password}
-                      onChange={handleChange}
-                      className="input-field"
-                      placeholder="Mínimo 8 caracteres"
-                      minLength={8}
-                    />
-                  </div>
-
                   {/* Nombre Usuario */}
-                  <div className="md:col-span-2">
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Nombre Completo (opcional)
                     </label>

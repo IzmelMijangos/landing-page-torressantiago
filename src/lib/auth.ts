@@ -32,8 +32,9 @@ export const authOptions: NextAuthOptions = {
             role: 'superadmin' | 'admin' | 'palenque';
             palenque_id: number | null;
             activo: boolean;
+            metadata: any;
           }>(
-            `SELECT id, uuid, email, password_hash, nombre_completo, role, palenque_id, activo
+            `SELECT id, uuid, email, password_hash, nombre_completo, role, palenque_id, activo, metadata
              FROM usuarios
              WHERE email = $1 AND activo = TRUE`,
             [credentials.email]
@@ -61,6 +62,9 @@ export const authOptions: NextAuthOptions = {
             [user.id]
           );
 
+          // Check if user needs to change password
+          const requiereCambioPassword = user.metadata?.requiere_cambio_password === true;
+
           // Retornar usuario
           return {
             id: user.id.toString(),
@@ -68,6 +72,7 @@ export const authOptions: NextAuthOptions = {
             name: user.nombre_completo,
             role: user.role as 'superadmin' | 'admin' | 'palenque',
             palenqueId: user.palenque_id,
+            requiereCambioPassword,
           } as any;
         } catch (error) {
           console.error('Error en autenticación:', error);
@@ -83,6 +88,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as any).role;
         token.palenqueId = (user as any).palenqueId;
+        token.requiereCambioPassword = (user as any).requiereCambioPassword;
       }
       return token;
     },
@@ -92,6 +98,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as any).role = token.role;
         (session.user as any).palenqueId = token.palenqueId;
+        (session.user as any).requiereCambioPassword = token.requiereCambioPassword;
       }
       return session;
     },

@@ -55,6 +55,9 @@ export async function GET() {
       leadsByOriginResult,
       conversionRateResult,
       leadsOverTimeResult,
+      newTodayResult,
+      waitingResponseResult,
+      highRatingUnconvertedResult,
     ] = await Promise.all([
       // Total leads
       queryMezcal(
@@ -125,6 +128,99 @@ export async function GET() {
          ORDER BY fecha`,
         [palenqueId]
       ),
+
+      // New leads today (not contacted)
+      queryMezcal(
+        `SELECT COUNT(*) as total
+         FROM leads
+         WHERE palenque_id = $1
+         AND estado = 'nuevo'
+         AND DATE(fecha_captura) = CURRENT_DATE`,
+        [palenqueId]
+      ),
+
+      // Waiting response >48hrs (contacted but no recent interaction)
+      queryMezcal(
+        `SELECT COUNT(*) as total
+         FROM leads
+         WHERE palenque_id = $1
+         AND estado = 'contactado'
+         AND (fecha_ultima_interaccion IS NULL OR fecha_ultima_interaccion < NOW() - INTERVAL '48 hours')`,
+        [palenqueId]
+      ),
+
+      // High rating (5 stars) not converted
+      queryMezcal(
+        `SELECT COUNT(*) as total
+         FROM leads
+         WHERE palenque_id = $1
+         AND experiencia_calificacion = 5
+         AND estado != 'convertido'`,
+        [palenqueId]
+      ),
+    ]);
+
+    // Get revenue and MoM metrics
+    const [
+      revenueThisMonthResult,
+      revenueLastMonthResult,
+      bestHourResult,
+      bestDayResult,
+    ] = await Promise.all([
+      // Revenue this month
+      queryMezcal(
+        `SELECT COALESCE(SUM(monto), 0) as total
+         FROM conversiones
+         WHERE palenque_id = $1
+         AND fecha_conversion >= date_trunc('month', CURRENT_DATE)
+         AND estado IN ('pagado', 'enviado', 'entregado')`,
+        [palenqueId]
+      ),
+
+      // Revenue last month
+      queryMezcal(
+        `SELECT COALESCE(SUM(monto), 0) as total
+         FROM conversiones
+         WHERE palenque_id = $1
+         AND fecha_conversion >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
+         AND fecha_conversion < date_trunc('month', CURRENT_DATE)
+         AND estado IN ('pagado', 'enviado', 'entregado')`,
+        [palenqueId]
+      ),
+
+      // Best hour for conversions
+      queryMezcal(
+        `SELECT EXTRACT(HOUR FROM fecha_conversion) as hora, COUNT(*) as total
+         FROM conversiones
+         WHERE palenque_id = $1
+         AND estado IN ('pagado', 'enviado', 'entregado')
+         GROUP BY EXTRACT(HOUR FROM fecha_conversion)
+         ORDER BY total DESC
+         LIMIT 1`,
+        [palenqueId]
+      ),
+
+      // Best day for conversions
+      queryMezcal(
+        `SELECT
+           CASE EXTRACT(DOW FROM fecha_conversion)
+             WHEN 0 THEN 'Domingo'
+             WHEN 1 THEN 'Lunes'
+             WHEN 2 THEN 'Martes'
+             WHEN 3 THEN 'Miércoles'
+             WHEN 4 THEN 'Jueves'
+             WHEN 5 THEN 'Viernes'
+             WHEN 6 THEN 'Sábado'
+           END as dia,
+           COUNT(*) as total
+         FROM conversiones
+         WHERE palenque_id = $1
+         AND estado IN ('pagado', 'enviado', 'entregado')
+         GROUP BY EXTRACT(DOW FROM fecha_conversion)
+         ORDER BY total DESC
+         LIMIT 1`,
+        [palenqueId]
+      ),
     ]);
 
     // Process funnel data
@@ -154,6 +250,18 @@ export async function GET() {
       convertidos: parseInt(row.convertidos || '0'),
     }));
 
+    // Calculate MoM change
+    const revenueThisMonth = parseFloat(revenueThisMonthResult.rows[0]?.total || '0');
+    const revenueLastMonth = parseFloat(revenueLastMonthResult.rows[0]?.total || '0');
+    const revenueMoMChange = revenueLastMonth > 0
+      ? ((revenueThisMonth - revenueLastMonth) / revenueLastMonth * 100).toFixed(1)
+      : revenueThisMonth > 0 ? '100.0' : '0.0';
+
+    const bestHour = bestHourResult.rows[0]?.hora
+      ? `${bestHourResult.rows[0].hora}:00`
+      : 'N/A';
+    const bestDay = bestDayResult.rows[0]?.dia || 'N/A';
+
     const metrics = {
       palenque: palenque.nombre,
       plan: palenque.plan,
@@ -163,6 +271,20 @@ export async function GET() {
       funnel,
       leadsByOrigin,
       leadsOverTime,
+      // Alerts data
+      alerts: {
+        newToday: parseInt(newTodayResult.rows[0]?.total || '0'),
+        waitingResponse: parseInt(waitingResponseResult.rows[0]?.total || '0'),
+        highRatingUnconverted: parseInt(highRatingUnconvertedResult.rows[0]?.total || '0'),
+      },
+      // Revenue and MoM metrics
+      revenue: {
+        thisMonth: revenueThisMonth,
+        lastMonth: revenueLastMonth,
+        momChange: parseFloat(revenueMoMChange),
+        bestHour,
+        bestDay,
+      },
     };
 
     return NextResponse.json(metrics);

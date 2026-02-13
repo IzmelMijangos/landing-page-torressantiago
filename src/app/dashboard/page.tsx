@@ -16,10 +16,15 @@ import {
   MagnifyingGlassIcon,
   ArrowRightOnRectangleIcon,
   ArrowDownTrayIcon,
+  CurrencyDollarIcon,
+  ClockIcon,
 } from '@heroicons/react/24/outline';
 import LeadsTimelineChart from '@/components/dashboard/LeadsTimelineChart';
 import FunnelChart from '@/components/dashboard/FunnelChart';
 import OriginPieChart from '@/components/dashboard/OriginPieChart';
+import AttentionRequired from '@/components/dashboard/AttentionRequired';
+import LeadQuickActions from '@/components/dashboard/LeadQuickActions';
+import ActiveFilters from '@/components/dashboard/ActiveFilters';
 
 interface Metrics {
   palenque: string;
@@ -37,6 +42,18 @@ interface Metrics {
   };
   leadsByOrigin: Array<{ origen: string; count: number }>;
   leadsOverTime: Array<{ fecha: string; count: number }>;
+  alerts: {
+    newToday: number;
+    waitingResponse: number;
+    highRatingUnconverted: number;
+  };
+  revenue: {
+    thisMonth: number;
+    lastMonth: number;
+    momChange: number;
+    bestHour: string;
+    bestDay: string;
+  };
 }
 
 interface Lead {
@@ -115,6 +132,64 @@ export default function DashboardPage() {
     } finally {
       setLeadsLoading(false);
     }
+  };
+
+  // Alert filter handlers
+  const handleFilterNewToday = () => {
+    setEstadoFilter('nuevo');
+    setSearch('');
+    setOrigenFilter('');
+    // Scroll to leads table
+    document.querySelector('#leads-table')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleFilterWaitingResponse = () => {
+    setEstadoFilter('contactado');
+    setSearch('');
+    setOrigenFilter('');
+    document.querySelector('#leads-table')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleFilterHighRating = () => {
+    setEstadoFilter('');
+    setSearch('');
+    setOrigenFilter('');
+    // Note: This will show all leads, user can manually filter by 5 stars
+    // To do this properly we'd need to add a rating filter
+    document.querySelector('#leads-table')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Status change handler
+  const handleStatusChange = async (leadId: number, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/dashboard/leads/${leadId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ estado: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar estado');
+      }
+
+      // Refresh leads and metrics
+      await Promise.all([fetchLeads(), fetchMetrics()]);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al actualizar el estado del lead');
+    }
+  };
+
+  // Filter removal handlers
+  const handleRemoveSearch = () => setSearch('');
+  const handleRemoveEstado = () => setEstadoFilter('');
+  const handleRemoveOrigen = () => setOrigenFilter('');
+  const handleClearAllFilters = () => {
+    setSearch('');
+    setEstadoFilter('');
+    setOrigenFilter('');
   };
 
   const exportToCSV = () => {
@@ -200,17 +275,41 @@ export default function DashboardPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Attention Required Section */}
+        {metrics?.alerts && (
+          <AttentionRequired
+            newToday={metrics.alerts.newToday}
+            waitingResponse={metrics.alerts.waitingResponse}
+            highRatingUnconverted={metrics.alerts.highRatingUnconverted}
+            onFilterNew={handleFilterNewToday}
+            onFilterWaiting={handleFilterWaitingResponse}
+            onFilterHighRating={handleFilterHighRating}
+          />
+        )}
+
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Total Leads */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Revenue This Month */}
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <UserGroupIcon className="h-8 w-8 text-blue-600" />
+                <CurrencyDollarIcon className="h-8 w-8 text-green-600" />
               </div>
               <div className="ml-4 flex-1">
-                <p className="text-sm font-medium text-gray-600">Total Leads</p>
-                <p className="text-3xl font-bold text-gray-900">{metrics?.totalLeads || 0}</p>
+                <p className="text-sm font-medium text-gray-600">Ingresos este Mes</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  ${metrics?.revenue?.thisMonth.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) || 0}
+                </p>
+                {metrics?.revenue && (
+                  <p className={`text-xs mt-1 flex items-center ${
+                    metrics.revenue.momChange > 0 ? 'text-green-600' : metrics.revenue.momChange < 0 ? 'text-red-600' : 'text-gray-500'
+                  }`}>
+                    {metrics.revenue.momChange > 0 ? '↑' : metrics.revenue.momChange < 0 ? '↓' : '→'}
+                    <span className="ml-1">
+                      {Math.abs(metrics.revenue.momChange)}% vs mes anterior
+                    </span>
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -219,11 +318,14 @@ export default function DashboardPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <CalendarIcon className="h-8 w-8 text-green-600" />
+                <CalendarIcon className="h-8 w-8 text-blue-600" />
               </div>
               <div className="ml-4 flex-1">
                 <p className="text-sm font-medium text-gray-600">Leads este Mes</p>
                 <p className="text-3xl font-bold text-gray-900">{metrics?.leadsThisMonth || 0}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {metrics?.totalLeads || 0} totales
+                </p>
               </div>
             </div>
           </div>
@@ -237,6 +339,25 @@ export default function DashboardPage() {
               <div className="ml-4 flex-1">
                 <p className="text-sm font-medium text-gray-600">Tasa Conversión</p>
                 <p className="text-3xl font-bold text-gray-900">{metrics?.conversionRate || 0}%</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {metrics?.funnel?.convertido || 0} convertidos
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Best Time */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <ClockIcon className="h-8 w-8 text-amber-600" />
+              </div>
+              <div className="ml-4 flex-1">
+                <p className="text-sm font-medium text-gray-600">Mejor Hora</p>
+                <p className="text-2xl font-bold text-gray-900">{metrics?.revenue?.bestHour || 'N/A'}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {metrics?.revenue?.bestDay || 'N/A'}
+                </p>
               </div>
             </div>
           </div>
@@ -367,7 +488,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Leads Table */}
-        <div className="bg-white rounded-lg shadow">
+        <div id="leads-table" className="bg-white rounded-lg shadow">
           <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900">Mis Leads</h2>
             <button
@@ -425,6 +546,19 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Active Filters */}
+          <div className="px-4 sm:px-6 py-2">
+            <ActiveFilters
+              search={search}
+              estadoFilter={estadoFilter}
+              origenFilter={origenFilter}
+              onRemoveSearch={handleRemoveSearch}
+              onRemoveEstado={handleRemoveEstado}
+              onRemoveOrigen={handleRemoveOrigen}
+              onClearAll={handleClearAllFilters}
+            />
+          </div>
+
           {/* Desktop Table */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -447,6 +581,9 @@ export default function DashboardPage() {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Calificación
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Acciones
                   </th>
                 </tr>
               </thead>
@@ -497,17 +634,23 @@ export default function DashboardPage() {
                           <span className="text-sm text-gray-400">-</span>
                         )}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <LeadQuickActions
+                          lead={lead}
+                          onStatusChange={handleStatusChange}
+                        />
+                      </td>
                     </tr>
                   ))
                 ) : leadsLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto"></div>
                     </td>
                   </tr>
                 ) : (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                       No se encontraron leads
                     </td>
                   </tr>
@@ -568,6 +711,12 @@ export default function DashboardPage() {
                         </div>
                       </div>
                     )}
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-gray-200">
+                    <LeadQuickActions
+                      lead={lead}
+                      onStatusChange={handleStatusChange}
+                    />
                   </div>
                 </div>
               ))

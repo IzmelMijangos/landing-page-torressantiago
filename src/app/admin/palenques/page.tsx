@@ -13,6 +13,7 @@ import {
   PencilIcon,
   TrashIcon,
   FunnelIcon,
+  EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 
 interface Palenque {
@@ -75,6 +76,36 @@ export default function PalenquesPage() {
     } catch (error) {
       console.error('Error:', error);
       alert('Error al desactivar palenque');
+    }
+  };
+
+  const handleResendCredentials = async (id: number, nombre: string) => {
+    if (!confirm(
+      `¿Reenviar credenciales de acceso para "${nombre}"?\n\n` +
+      `Se generará una nueva contraseña temporal y se enviará por email al usuario asociado.`
+    )) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/palenques/${id}/reenviar-credenciales`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al reenviar credenciales');
+      }
+
+      alert(
+        `✅ Credenciales reenviadas exitosamente\n\n` +
+        `Email enviado a: ${data.email_sent_to}\n\n` +
+        `El usuario recibirá una nueva contraseña temporal.`
+      );
+    } catch (error: any) {
+      console.error('Error:', error);
+      alert(`❌ Error: ${error.message}`);
     }
   };
 
@@ -246,6 +277,13 @@ export default function PalenquesPage() {
                           <PencilIcon className="h-5 w-5" />
                         </Link>
                         <button
+                          onClick={() => handleResendCredentials(palenque.id, palenque.nombre)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="Reenviar Credenciales"
+                        >
+                          <EnvelopeIcon className="h-5 w-5" />
+                        </button>
+                        <button
                           onClick={() => handleDelete(palenque.id, palenque.nombre)}
                           className="text-red-600 hover:text-red-900"
                           title="Desactivar"
@@ -325,20 +363,29 @@ export default function PalenquesPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2 pt-3 border-t border-gray-200">
-                <Link
-                  href={`/admin/palenques/${palenque.id}`}
-                  className="flex-1 flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition"
-                >
-                  <PencilIcon className="h-4 w-4 mr-2" />
-                  Editar
-                </Link>
+              <div className="space-y-2 pt-3 border-t border-gray-200">
+                <div className="flex gap-2">
+                  <Link
+                    href={`/admin/palenques/${palenque.id}`}
+                    className="flex-1 flex items-center justify-center px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition"
+                  >
+                    <PencilIcon className="h-4 w-4 mr-2" />
+                    Editar
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(palenque.id, palenque.nombre)}
+                    className="flex-1 flex items-center justify-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition"
+                  >
+                    <TrashIcon className="h-4 w-4 mr-2" />
+                    Desactivar
+                  </button>
+                </div>
                 <button
-                  onClick={() => handleDelete(palenque.id, palenque.nombre)}
-                  className="flex-1 flex items-center justify-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition"
+                  onClick={() => handleResendCredentials(palenque.id, palenque.nombre)}
+                  className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
                 >
-                  <TrashIcon className="h-4 w-4 mr-2" />
-                  Desactivar
+                  <EnvelopeIcon className="h-4 w-4 mr-2" />
+                  Reenviar Credenciales
                 </button>
               </div>
             </div>

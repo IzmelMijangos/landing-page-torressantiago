@@ -38,6 +38,12 @@ export default function LoginPage() {
       const response = await fetch('/api/auth/session');
       const session = await response.json();
 
+      // Verificar si requiere cambio de contraseña
+      if (session?.user?.requiereCambioPassword) {
+        router.push('/cambiar-password');
+        return;
+      }
+
       // Redirigir según el rol
       if (session?.user?.role === 'palenque') {
         router.push('/dashboard');
